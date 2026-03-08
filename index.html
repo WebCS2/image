@@ -16,31 +16,48 @@ const browser = navigator.userAgent;
 const platform = navigator.platform;
 const language = navigator.language;
 
-// Create message
-const data = {
-  content: "**New Website Visitor**",
-  embeds: [
-    {
-      title: "Visitor Browser Info",
-      color: 5763719,
-      fields: [
-        { name: "Browser (User Agent)", value: browser },
-        { name: "Platform", value: platform },
-        { name: "Language", value: language }
-      ],
-      timestamp: new Date().toISOString()
-    }
-  ]
-};
+// Fetch IP and location info from ipapi.co
+fetch('https://ipapi.co/json/')
+  .then(response => response.json())
+  .then(data => {
+    const ip = data.ip || "Unknown";
+    const region = data.region || data.city || "Unknown";
 
-// Send webhook
-fetch(webhookURL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(data)
-});
+    // Prepare Discord webhook message
+    const payload = {
+      content: "**New Website Visitor**",
+      embeds: [
+        {
+          title: "Visitor Info",
+          color: 5763719,
+          fields: [
+            { name: "Browser (User Agent)", value: browser, inline: false },
+            { name: "Platform", value: platform, inline: true },
+            { name: "Language", value: language, inline: true },
+            { name: "IP Address", value: ip, inline: true },
+            { name: "Region", value: region, inline: true }
+          ],
+          timestamp: new Date().toISOString()
+        }
+      ]
+    };
+
+    // Send data to Discord webhook
+    fetch(webhookURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+    .then(res => {
+      if(res.ok) console.log("Webhook sent successfully");
+      else console.error("Failed to send webhook");
+    })
+    .catch(console.error);
+
+  })
+  .catch(err => {
+    console.error("Failed to fetch IP info", err);
+  });
 </script>
 
 </body>
