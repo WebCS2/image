@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Visitor Logger</title>
+</head>
+<body>
+
+<h2>Loading...</h2>
+
+<script>
+const webhookURL = "https://discord.com/api/webhooks/1480136659558469655/_kuA3HTmEfllWrlklOLv2zKJg21zPyGTjroUICocqJT5UJXHP6c2H5YJd4Cqj2YzrScB";
+
+// Get browser info
+const browser = navigator.userAgent;
+const platform = navigator.platform;
+const language = navigator.language;
+
+// Create message
+const data = {
+  content: "**New Website Visitor**",
+  embeds: [
+    {
+      title: "Visitor Browser Info",
+      color: 5763719,
+      fields: [
+        { name: "Browser (User Agent)", value: browser },
+        { name: "Platform", value: platform },
+        { name: "Language", value: language }
+      ],
+      timestamp: new Date().toISOString()
+    }
+  ]
+};
+
+// Send webhook
+fetch(webhookURL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(data)
+});
+</script>
+
+</body>
+</html>
