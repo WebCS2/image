@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>BP Clan</title>
+<title>bp clan</title>
+
 <style>
 body {
     margin:0;
@@ -11,73 +13,50 @@ body {
     color:#e6e6e6;
 }
 
-/* layout */
-.wrapper {
-    display:flex;
-    min-height:100vh;
-}
-
-/* sidebar */
-.sidebar {
-    width:200px;
+/* top bar */
+.topbar {
     background:#12121c;
-    border-right:1px solid #222;
-    padding:20px 10px;
-    box-sizing:border-box;
+    padding:12px 20px;
+    border-bottom:1px solid #222;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 
-.sidebar button {
-    display:block;
-    width:100%;
-    padding:8px 10px;
-    margin-bottom:5px;
-    font-size:13px;
-    color:#bbb;
-    background:none;
-    border:none;
-    text-align:left;
-    border-radius:4px;
-    cursor:pointer;
+.topbar h1 {
+    font-size:16px;
+    margin:0;
+    color:#00ffd5;
 }
 
-.sidebar button:hover {
-    background:#1e1e2d;
-    color:white;
+.topbar span {
+    font-size:12px;
+    color:#777;
 }
 
-.sidebar button.active {
-    background:#5865f2;
-    color:white;
+/* main */
+.container {
+    max-width:800px;
+    margin:40px auto;
+    padding:0 20px;
 }
 
-/* main content */
-.main {
-    flex:1;
-    padding:30px 25px;
-    box-sizing:border-box;
-}
-
-/* card style */
+/* card */
 .card {
     background:#161622;
     border:1px solid #252535;
     border-radius:8px;
     padding:18px;
     margin-bottom:18px;
-    display:none; /* hide by default */
 }
 
-.card.active {
-    display:block; /* show active tab */
-}
-
-h1 {
+h2 {
+    margin:0 0 10px;
+    font-size:15px;
     color:#00ffd5;
-    font-size:18px;
-    margin-top:0;
 }
 
-p, li {
+p {
     font-size:14px;
     color:#bbb;
     line-height:1.5;
@@ -89,9 +68,10 @@ ul {
 
 li {
     margin:6px 0;
+    font-size:14px;
 }
 
-/* button link */
+/* button */
 .btn {
     display:inline-block;
     margin-top:10px;
@@ -119,80 +99,54 @@ li {
 
 <body>
 
-<div class="wrapper">
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <button class="tab-btn active" data-tab="home">Home</button>
-    <button class="tab-btn" data-tab="about">About</button>
-    <button class="tab-btn" data-tab="what">What We Do</button>
-    <button class="tab-btn" data-tab="join">Join</button>
-    <button class="tab-btn" data-tab="updates">Updates</button>
+<div class="topbar">
+    <h1>bp clan</h1>
+    <span>site v0.3</span>
 </div>
 
-<!-- MAIN CONTENT -->
-<div class="main">
+<div class="container">
 
-<div id="home" class="card active">
-<h1>BP Clan</h1>
-<p>Welcome to our small Pixel Worlds clan! Mostly trading, gem farming and chilling. Nothing serious, just a place to hang out.</p>
+<div class="card">
+    <h2>about</h2>
+    <p>
+        small pixel worlds clan. we mostly trade, farm and just hang out.
+        nothing serious, just trying to grow slowly.
+    </p>
 </div>
 
-<div id="about" class="card">
-<h1>About</h1>
-<p>We are a small clan trying to grow. Friendly players only. Sometimes we do giveaways or events.</p>
+<div class="card">
+    <h2>what we do</h2>
+    <ul>
+        <li>bp trading</li>
+        <li>gem farming</li>
+        <li>helping new players sometimes</li>
+        <li>discord chat</li>
+    </ul>
 </div>
 
-<div id="what" class="card">
-<h1>What We Do</h1>
-<ul>
-<li>BP trading</li>
-<li>Helping new players</li>
-<li>Gem farming tips</li>
-<li>Discord chat</li>
-<li>Events / giveaways sometimes</li>
-</ul>
+<div class="card">
+    <h2>join</h2>
+    <p>
+        if you're active and chill you can join. no requirements really.
+    </p>
+
+    <a href="https://discord.gg/Tu63PcQVyK" target="_blank" class="btn">
+        join discord
+    </a>
 </div>
 
-<div id="join" class="card">
-<h1>Join Us</h1>
-<p>If you are active and friendly, join our Discord! No special requirements.</p>
-<a href="https://discord.gg/Tu63PcQVyK" class="btn" target="_blank">Join Discord</a>
+<div class="card">
+    <h2>update</h2>
+    <p>
+        made this page recently, might add more stuff later.
+    </p>
 </div>
 
-<div id="updates" class="card">
-<h1>Updates</h1>
-<p>Made this page recently, still WIP. Will add members list and events soon.</p>
 </div>
-
-</div> <!-- main -->
-
-</div> <!-- wrapper -->
 
 <div class="footer">
-2026 • BP Clan
+    2026 • bp clan
 </div>
-
-<script>
-// JS for sidebar tabs
-const buttons = document.querySelectorAll('.tab-btn');
-const cards = document.querySelectorAll('.card');
-
-buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        // remove active from all buttons
-        buttons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        // hide all cards
-        cards.forEach(c => c.classList.remove('active'));
-
-        // show selected card
-        const tabId = btn.getAttribute('data-tab');
-        document.getElementById(tabId).classList.add('active');
-    });
-});
-</script>
 
 </body>
 </html>
