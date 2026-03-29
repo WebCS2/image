@@ -1,130 +1,198 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BP Clan</title>
+<meta charset="UTF-8">
+<title>BP Clan</title>
+<style>
+body {
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#0e0e17;
+    color:#e6e6e6;
+}
 
-    <!-- Website Icon -->
-    <link rel="icon" type="image/png" href="https://image2url.com/r2/default/images/1774771433484-c9282750-c484-4146-9d62-75e7996dabdb.png">
+/* layout */
+.wrapper {
+    display:flex;
+    min-height:100vh;
+}
 
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
-            color: #ffffff;
-            text-align: center;
-        }
+/* sidebar */
+.sidebar {
+    width:200px;
+    background:#12121c;
+    border-right:1px solid #222;
+    padding:20px 10px;
+    box-sizing:border-box;
+}
 
-        .container {
-            max-width: 800px;
-            margin: 80px auto;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 255, 200, 0.2);
-            backdrop-filter: blur(10px);
-        }
+.sidebar button {
+    display:block;
+    width:100%;
+    padding:8px 10px;
+    margin-bottom:5px;
+    font-size:13px;
+    color:#bbb;
+    background:none;
+    border:none;
+    text-align:left;
+    border-radius:4px;
+    cursor:pointer;
+}
 
-        .logo {
-            width: 80px;
-            margin-bottom: 15px;
-        }
+.sidebar button:hover {
+    background:#1e1e2d;
+    color:white;
+}
 
-        h1 {
-            font-size: 32px;
-            color: #00ffd5;
-            margin-bottom: 10px;
-        }
+.sidebar button.active {
+    background:#5865f2;
+    color:white;
+}
 
-        p {
-            font-size: 18px;
-            color: #ccc;
-        }
+/* main content */
+.main {
+    flex:1;
+    padding:30px 25px;
+    box-sizing:border-box;
+}
 
-        h2 {
-            margin-top: 30px;
-            color: #00ffd5;
-        }
+/* card style */
+.card {
+    background:#161622;
+    border:1px solid #252535;
+    border-radius:8px;
+    padding:18px;
+    margin-bottom:18px;
+    display:none; /* hide by default */
+}
 
-        ul {
-            list-style: none;
-            padding: 0;
-            margin-top: 15px;
-        }
+.card.active {
+    display:block; /* show active tab */
+}
 
-        li {
-            margin: 12px 0;
-            font-size: 17px;
-            background: rgba(255,255,255,0.05);
-            padding: 10px;
-            border-radius: 10px;
-        }
+h1 {
+    color:#00ffd5;
+    font-size:18px;
+    margin-top:0;
+}
 
-        .button {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 15px 30px;
-            background: linear-gradient(45deg, #5865F2, #7289da);
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            border-radius: 12px;
-            transition: 0.3s;
-            box-shadow: 0 0 15px rgba(88, 101, 242, 0.6);
-        }
+p, li {
+    font-size:14px;
+    color:#bbb;
+    line-height:1.5;
+}
 
-        .button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(88, 101, 242, 0.9);
-        }
+ul {
+    padding-left:18px;
+}
 
-        footer {
-            margin-top: 40px;
-            font-size: 14px;
-            color: #777;
-        }
-    </style>
+li {
+    margin:6px 0;
+}
+
+/* button link */
+.btn {
+    display:inline-block;
+    margin-top:10px;
+    padding:10px 16px;
+    background:#5865f2;
+    color:white;
+    text-decoration:none;
+    border-radius:6px;
+    font-size:14px;
+}
+
+.btn:hover {
+    background:#4752c4;
+}
+
+/* footer */
+.footer {
+    text-align:center;
+    font-size:12px;
+    color:#666;
+    margin-top:30px;
+}
+</style>
 </head>
 
 <body>
 
-    <div class="container">
+<div class="wrapper">
 
-        <!-- Logo -->
-        <img src="https://image2url.com/r2/default/images/1774771433484-c9282750-c484-4146-9d62-75e7996dabdb.png" class="logo">
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <button class="tab-btn active" data-tab="home">Home</button>
+    <button class="tab-btn" data-tab="about">About</button>
+    <button class="tab-btn" data-tab="what">What We Do</button>
+    <button class="tab-btn" data-tab="join">Join</button>
+    <button class="tab-btn" data-tab="updates">Updates</button>
+</div>
 
-        <h1>Welcome to the ultimate hub for Pixel Worlds players!</h1>
+<!-- MAIN CONTENT -->
+<div class="main">
 
-        <p>
-            Whether you’re a trader, farmer, or just here to chill, everyone is welcome.
-        </p>
+<div id="home" class="card active">
+<h1>BP Clan</h1>
+<p>Welcome to our small Pixel Worlds clan! Mostly trading, gem farming and chilling. Nothing serious, just a place to hang out.</p>
+</div>
 
-        <h2>✨ What we offer:</h2>
+<div id="about" class="card">
+<h1>About</h1>
+<p>We are a small clan trying to grow. Friendly players only. Sometimes we do giveaways or events.</p>
+</div>
 
-        <ul>
-            <li>Active BP trading & deals</li>
-            <li>Friendly & helpful community</li>
-            <li>Fun events, giveaways, and competitions</li>
-            <li>Tips & strategies to farm gems faster</li>
-        </ul>
+<div id="what" class="card">
+<h1>What We Do</h1>
+<ul>
+<li>BP trading</li>
+<li>Helping new players</li>
+<li>Gem farming tips</li>
+<li>Discord chat</li>
+<li>Events / giveaways sometimes</li>
+</ul>
+</div>
 
-        <h2>⚔️ Join us</h2>
+<div id="join" class="card">
+<h1>Join Us</h1>
+<p>If you are active and friendly, join our Discord! No special requirements.</p>
+<a href="https://discord.gg/Tu63PcQVyK" class="btn" target="_blank">Join Discord</a>
+</div>
 
-        <p>
-            Join from the start, grow with us, and be part of a guild that’s all about fun, trading, and teamwork.
-        </p>
+<div id="updates" class="card">
+<h1>Updates</h1>
+<p>Made this page recently, still WIP. Will add members list and events soon.</p>
+</div>
 
-        <a href="https://discord.gg/Tu63PcQVyK" target="_blank" class="button">
-            Join our Discord
-        </a>
+</div> <!-- main -->
 
-        <footer>
-            © 2026 Pixel Worlds BP Clan
-        </footer>
+</div> <!-- wrapper -->
 
-    </div>
+<div class="footer">
+2026 • BP Clan
+</div>
+
+<script>
+// JS for sidebar tabs
+const buttons = document.querySelectorAll('.tab-btn');
+const cards = document.querySelectorAll('.card');
+
+buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // remove active from all buttons
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // hide all cards
+        cards.forEach(c => c.classList.remove('active'));
+
+        // show selected card
+        const tabId = btn.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+    });
+});
+</script>
 
 </body>
 </html>
