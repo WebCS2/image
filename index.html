@@ -3,60 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Worlds Hub</title>
+    <title>BP Clan</title>
+
+    <!-- Website Icon -->
+    <link rel="icon" type="image/png" href="https://image2url.com/r2/default/images/1774771433484-c9282750-c484-4146-9d62-75e7996dabdb.png">
+
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+            font-family: 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
             color: #ffffff;
             text-align: center;
-            padding: 40px;
         }
 
         .container {
-            max-width: 700px;
-            margin: auto;
-            background: rgba(0,0,0,0.3);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 200, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            width: 80px;
+            margin-bottom: 15px;
         }
 
         h1 {
+            font-size: 32px;
+            color: #00ffd5;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 18px;
+            color: #ccc;
+        }
+
+        h2 {
+            margin-top: 30px;
             color: #00ffd5;
         }
 
         ul {
-            text-align: left;
-            display: inline-block;
-            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
         }
 
         li {
-            margin: 10px 0;
+            margin: 12px 0;
+            font-size: 17px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 10px;
         }
 
         .button {
             display: inline-block;
             margin-top: 30px;
-            padding: 15px 25px;
-            background: #5865F2;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #5865F2, #7289da);
             color: white;
             text-decoration: none;
             font-size: 18px;
-            border-radius: 10px;
+            border-radius: 12px;
             transition: 0.3s;
+            box-shadow: 0 0 15px rgba(88, 101, 242, 0.6);
         }
 
         .button:hover {
-            background: #4752c4;
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(88, 101, 242, 0.9);
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #777;
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
+
+        <!-- Logo -->
+        <img src="https://image2url.com/r2/default/images/1774771433484-c9282750-c484-4146-9d62-75e7996dabdb.png" class="logo">
+
         <h1>Welcome to the ultimate hub for Pixel Worlds players!</h1>
 
         <p>
@@ -64,21 +102,28 @@
         </p>
 
         <h2>✨ What we offer:</h2>
+
         <ul>
-            <li>• Active BP trading & deals</li>
-            <li>• Friendly & helpful community</li>
-            <li>• Fun events, giveaways, and competitions</li>
-            <li>• Tips & strategies to farm gems faster</li>
+            <li>Active BP trading & deals</li>
+            <li>Friendly & helpful community</li>
+            <li>Fun events, giveaways, and competitions</li>
+            <li>Tips & strategies to farm gems faster</li>
         </ul>
 
-        <h2>⚔️</h2>
+        <h2>⚔️ Join us</h2>
+
         <p>
             Join from the start, grow with us, and be part of a guild that’s all about fun, trading, and teamwork.
         </p>
 
-        <a href="https://discord.gg/Tu63PcQVyK" class="button" target="_blank">
+        <a href="https://discord.gg/Tu63PcQVyK" target="_blank" class="button">
             Join our Discord
         </a>
+
+        <footer>
+            © 2026 Pixel Worlds BP Clan
+        </footer>
+
     </div>
 
 </body>
