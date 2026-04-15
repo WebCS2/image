@@ -3,18 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player</title>
+    <title>666666666666666666666</title>
 
     <style>
         body {
             margin: 0;
             background: black;
+            overflow: hidden;
         }
 
         video {
             width: 100vw;
             height: 100vh;
-            object-fit: cover; /* makes it scale nicely */
+            object-fit: cover;
+        }
+
+        audio {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            opacity: 0.7;
         }
     </style>
 </head>
@@ -22,8 +30,11 @@
 
 <video autoplay muted loop playsinline>
     <source src="https://www.image2url.com/r2/default/videos/1776265909806-6579f537-a855-445d-9398-d0304e5bc044.mp4" type="video/mp4">
-    Your browser does not support the video tag.
 </video>
+
+<audio autoplay loop controls preload="auto">
+    <source src="https://videotourl.com/audio/1776266146427-62cd2f8c-77b1-446a-9580-c1f2dd779d73.mp3" type="audio/mp3">
+</audio>
 
 </body>
 </html>
