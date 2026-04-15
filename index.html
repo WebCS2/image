@@ -1,152 +1,29 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>bp clan</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
 
-<style>
-body {
-    margin:0;
-    font-family: Arial, sans-serif;
-    background:#0e0e17;
-    color:#e6e6e6;
-}
+    <style>
+        body {
+            margin: 0;
+            background: black;
+        }
 
-/* top bar */
-.topbar {
-    background:#12121c;
-    padding:12px 20px;
-    border-bottom:1px solid #222;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-.topbar h1 {
-    font-size:16px;
-    margin:0;
-    color:#00ffd5;
-}
-
-.topbar span {
-    font-size:12px;
-    color:#777;
-}
-
-/* main */
-.container {
-    max-width:800px;
-    margin:40px auto;
-    padding:0 20px;
-}
-
-/* card */
-.card {
-    background:#161622;
-    border:1px solid #252535;
-    border-radius:8px;
-    padding:18px;
-    margin-bottom:18px;
-}
-
-h2 {
-    margin:0 0 10px;
-    font-size:15px;
-    color:#00ffd5;
-}
-
-p {
-    font-size:14px;
-    color:#bbb;
-    line-height:1.5;
-}
-
-ul {
-    padding-left:18px;
-}
-
-li {
-    margin:6px 0;
-    font-size:14px;
-}
-
-/* button */
-.btn {
-    display:inline-block;
-    margin-top:10px;
-    padding:10px 16px;
-    background:#5865f2;
-    color:white;
-    text-decoration:none;
-    border-radius:6px;
-    font-size:14px;
-}
-
-.btn:hover {
-    background:#4752c4;
-}
-
-/* footer */
-.footer {
-    text-align:center;
-    font-size:12px;
-    color:#666;
-    margin-top:30px;
-}
-</style>
+        video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover; /* makes it scale nicely */
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="topbar">
-    <h1>bp clan</h1>
-    <span>site v0.3</span>
-</div>
-
-<div class="container">
-
-<div class="card">
-    <h2>about</h2>
-    <p>
-        small pixel worlds clan. we mostly trade, farm and just hang out.
-        nothing serious, just trying to grow slowly.
-    </p>
-</div>
-
-<div class="card">
-    <h2>what we do</h2>
-    <ul>
-        <li>bp trading</li>
-        <li>gem farming</li>
-        <li>helping new players sometimes</li>
-        <li>discord chat</li>
-    </ul>
-</div>
-
-<div class="card">
-    <h2>join</h2>
-    <p>
-        if you're active and chill you can join. no requirements really.
-    </p>
-
-    <a href="https://discord.gg/Tu63PcQVyK" target="_blank" class="btn">
-        join discord
-    </a>
-</div>
-
-<div class="card">
-    <h2>update</h2>
-    <p>
-        made this page recently, might add more stuff later.
-    </p>
-</div>
-
-</div>
-
-<div class="footer">
-    2026 • bp clan
-</div>
+<video autoplay muted loop playsinline>
+    <source src="https://www.image2url.com/r2/default/videos/1776265909806-6579f537-a855-445d-9398-d0304e5bc044.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
 
 </body>
 </html>
