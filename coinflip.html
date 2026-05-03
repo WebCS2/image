@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Coinflip</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.box {
+  background: rgba(0,0,0,0.6);
+  padding: 40px;
+  border-radius: 15px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #00c6ff;
+  color: white;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h1 id="result">Press to Play</h1>
+  <button onclick="flip()">Flip Coin</button>
+  <br>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+function getCookie(name) {
+  let cookies = document.cookie.split("; ");
+  for (let c of cookies) {
+    let [key, val] = c.split("=");
+    if (key === name) return val;
+  }
+  return null;
+}
+
+// redirect if not logged in
+if (!getCookie("user")) {
+  window.location.href = "/";
+}
+
+function flip() {
+  let win = Math.random() < 0.5;
+
+  if (win) {
+    document.getElementById("result").textContent = "You WON! 🎉";
+  } else {
+    document.getElementById("result").textContent = "You LOST 😢";
+  }
+}
+
+function logout() {
+  document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+  document.cookie = "pass=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+  window.location.href = "/";
+}
+</script>
+
+</body>
+</html>
