@@ -327,7 +327,7 @@
 
     user.bytecoins -= bet;
 
-    const flip = Math.random() < 0.3 ? "heads" : "tails";
+    const flip = Math.random() < 0.5 ? "heads" : "tails";
 
     if (flip === currentPick) {
       const winnings = Math.floor(bet * 0.90);
