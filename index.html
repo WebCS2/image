@@ -151,7 +151,7 @@
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-auth-compat.js"></script>
-script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
 
 <script>
   // Your Firebase config
@@ -159,7 +159,7 @@ script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.j
     apiKey: "AIzaSyCx4dKsPQ5ph7g7P6E7ZAv7NarT0uQhZGQ",
     authDomain: "pixeliaworlds.firebaseapp.com",
     projectId: "pixeliaworlds",
-    storageBucket: "pixeliaworlds.firebasestorage.app",
+    storageBucket: "pixeliaworlds.appspot.com",
     messagingSenderId: "261360406874",
     appId: "1:261360406874:web:c516b77a56eb529cfea363",
     measurementId: "G-DRNSDL3LRD"
@@ -181,8 +181,8 @@ script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.j
   }
 
   function signUp() {
-    const email = su_email.value.trim();
-    const pass  = su_pass.value;
+    const email = document.getElementById("su_email").value.trim();
+    const pass  = document.getElementById("su_pass").value;
     if (!email || !pass) return alert("Fill everything");
     auth.createUserWithEmailAndPassword(email, pass)
       .then(() => alert("Account created! Now log in."))
@@ -190,8 +190,9 @@ script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.j
   }
 
   function logIn() {
-    const email = li_email.value.trim();
-    const pass  = li_pass.value;
+    const email = document.getElementById("li_email").value.trim();
+    const pass  = document.getElementById("li_pass").value;
+    if (!email || !pass) return alert("Fill everything");
     auth.signInWithEmailAndPassword(email, pass)
       .catch(e => alert(e.message));
   }
@@ -299,7 +300,8 @@ script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.j
 
   document.getElementById("chatInput").addEventListener("keydown", e => {
     if (e.key === "Enter" && currentUser) {
-      const text = chatInput.value.trim();
+      const input = document.getElementById("chatInput");
+      const text = input.value.trim();
       if (!text) return;
       const name = currentUser.email.split("@")[0];
       const msgRef = db.ref("chat").push();
@@ -309,7 +311,7 @@ script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.j
         text,
         ts: firebase.database.ServerValue.TIMESTAMP
       });
-      chatInput.value = "";
+      input.value = "";
     }
   });
 
