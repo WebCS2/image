@@ -1,114 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Auth UI</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f1020;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+    }
 
+    .box {
+      background: #1b1d36;
+      padding: 25px;
+      border-radius: 12px;
+      width: 320px;
+    }
 
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
 
-Prašyti pasiūlymo
-make me a website where it will show first frame to Login or Sign up if sign up it will say Name Password Birth date and sign up it will save and u can log in and after u sign up it will delete the frame and it will create new frame where top right will show Log out if u logout it will logout
+    .tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      background: #0f1020;
+    }
 
-I’ve created a simple working website for you in the canvas.
+    .tab.active {
+      background: #3b3f7a;
+    }
 
-Here’s what it does:
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+    }
 
-Lets you switch between Login and Sign Up
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #3b3f7a;
+      color: white;
+    }
 
-Sign Up asks for Name, Password, Birth date
+    #dashboard {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
 
-Saves user data in localStorage (browser storage)
+<div class="box" id="auth">
+  <div class="tabs">
+    <div class="tab active" id="signupTab" onclick="setMode(true)">Sign up</div>
+    <div class="tab" id="loginTab" onclick="setMode(false)">Sign in</div>
+  </div>
 
-Login checks saved data
-
-After login, it hides the form and shows a Log out button (top right)
-
-Logout brings you back to the login screen
-
-You can:
-
-Copy the code into a .html file (e.g., index.html)
-
-Open it in your browser
-
-If you want, I can upgrade this with:
-
-Better design (modern UI)
-
-Multiple users instead of just one
-
-Password hashing (more secure)
-
-Backend (real database, not just browser storage)
-
-Just tell me 👍
-
-
-replace submit text in login to say Log in and down will say "Sign Up"
-
-Done.
-
-Now:
-
-The main button says “Log in” when in login mode
-
-The button below says “Sign Up”
-
-When you switch modes, the text updates properly (e.g., “Sign Up” / “Back to Login”)
-
-If you want it styled like real apps (links instead of buttons, nicer spacing), I can refine the UI next.
-
-
-add inside Login name up bacause how the fk will someone login
-
-Done.
-
-Now the login actually makes sense:
-
-Name is always shown (login + signup)
-
-Birth date only shows during sign up
-
-Login now requires Name + Password, not just password
-
-If you want next upgrade, I can make it feel like a real app:
-
-Show user name after login (“Welcome, John”)
-
-Add password visibility toggle 👀
-
-Store multiple accounts instead of just one
-
-Just say 👍
-
-
-make it so it will detect if the username is claimed
-
-Done.
-
-Now your website supports:
-
-✅ Multiple user accounts
-
-❌ Prevents duplicate usernames (“Username already taken”)
-
-🔐 Login checks both username + password
-
-💾 Stores all users in localStorage
-
-If you want next upgrade, I can make it even more real:
-
-Show logged-in username on dashboard
-
-Add “forgot password”
-
-Add password rules (min length, symbols)
-
-Or turn it into a full backend system (real database)
-
-Just say 👍
-
-
-Įkeltas vaizdas
-without the gmail
-
-Simple Auth Website
-· html
+  <input type="text" id="username" placeholder="Username">
   <input type="password" id="password" placeholder="Password">
 
   <button onclick="submitForm()" id="actionBtn">Sign up</button>
@@ -188,5 +157,3 @@ Simple Auth Website
 
 </body>
 </html>
-
-If you want next upgra
