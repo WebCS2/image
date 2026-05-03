@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Mini 2D Firebase World</title>
+<title>Pixelia Worlds</title>
 <style>
   body { margin:0; background:#1e1e1e; color:white; font-family:Arial; text-align:center; overflow:hidden; }
   .frame { width:300px; margin:80px auto; padding:20px; background:#2b2b2b; border-radius:10px; display:none; }
@@ -15,7 +15,7 @@
 </head>
 <body>
 
-<h1 id="title">Mini 2D Firebase World</h1>
+<h1 id="title">Pixelia Worlds</h1>
 
 <div id="menu" class="frame" style="display:block;">
   <button onclick="showFrame('signup')">Sign Up</button>
@@ -51,15 +51,15 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
 
 <script>
-// 🔧 Your Firebase config (safe to be public, security is in rules)
+// 🔥 Your Firebase config
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCx4dKsPQ5ph7g7P6E7ZAv7NarT0uQhZGQ",
+  authDomain: "pixeliaworlds.firebaseapp.com",
+  projectId: "pixeliaworlds",
+  storageBucket: "pixeliaworlds.firebasestorage.app",
+  messagingSenderId: "261360406874",
+  appId: "1:261360406874:web:c516b77a56eb529cfea363",
+  measurementId: "G-DRNSDL3LRD"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -67,7 +67,7 @@ const auth = firebase.auth();
 const db   = firebase.database();
 
 let currentUser = null;
-let players = {};      // uid -> {x,y,element,name}
+let players = {};
 let keys = {};
 
 /* UI */
@@ -114,22 +114,20 @@ function startGame() {
   const uid = currentUser.uid;
   const name = currentUser.email.split("@")[0];
 
-  // create/update own player node
   const playerRef = db.ref("players/" + uid);
   playerRef.set({ name, x: 200, y: 200 });
   playerRef.onDisconnect().remove();
 
-  // listen to all players
   db.ref("players").on("value", snap => {
     const data = snap.val() || {};
-    // remove missing
+
     for (let id in players) {
       if (!data[id]) {
         players[id].element.remove();
         delete players[id];
       }
     }
-    // update / create
+
     for (let id in data) {
       const p = data[id];
       if (!players[id]) {
@@ -144,10 +142,8 @@ function startGame() {
     }
   });
 
-  // movement loop
   gameLoop();
 
-  // chat listener
   db.ref("chat").limitToLast(50).on("child_added", snap => {
     const msg = snap.val();
     addChatMessage(msg.name + ": " + msg.text);
@@ -178,7 +174,7 @@ function gameLoop() {
 
     if (keys["a"] || keys["ArrowLeft"])  { me.x -= 3; moved = true; }
     if (keys["d"] || keys["ArrowRight"]) { me.x += 3; moved = true; }
-    if (me.y < 400) { me.y += 3; moved = true; } // gravity
+    if (me.y < 400) { me.y += 3; moved = true; }
 
     updatePlayerPosition(me);
 
