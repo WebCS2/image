@@ -1,224 +1,217 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Mini 2D Game</title>
+<title>Mini 2D Firebase World</title>
 <style>
-    body {
-        background:#1e1e1e;
-        font-family:Arial;
-        color:white;
-        text-align:center;
-        overflow:hidden;
-        margin:0;
-    }
-    .frame {
-        width:300px;
-        margin:80px auto;
-        padding:20px;
-        background:#2b2b2b;
-        border-radius:10px;
-        display:none;
-    }
-    input {
-        width:90%;
-        padding:10px;
-        margin:8px 0;
-        border:none;
-        border-radius:5px;
-    }
-    button {
-        width:95%;
-        padding:10px;
-        margin-top:10px;
-        background:#4caf50;
-        border:none;
-        border-radius:5px;
-        color:white;
-        font-size:16px;
-        cursor:pointer;
-    }
-    #world {
-        width:100vw;
-        height:100vh;
-        background:#3a3a3a;
-        position:relative;
-        display:none;
-        overflow:hidden;
-    }
-    .player {
-        width:30px;
-        height:40px;
-        background:#00aaff;
-        position:absolute;
-        border-radius:5px;
-    }
-    #chatBox {
-        position:absolute;
-        bottom:10px;
-        left:50%;
-        transform:translateX(-50%);
-        width:300px;
-    }
-    #chatMessages {
-        width:300px;
-        height:120px;
-        background:#00000080;
-        overflow-y:auto;
-        padding:5px;
-        border-radius:5px;
-        text-align:left;
-        font-size:14px;
-    }
+  body { margin:0; background:#1e1e1e; color:white; font-family:Arial; text-align:center; overflow:hidden; }
+  .frame { width:300px; margin:80px auto; padding:20px; background:#2b2b2b; border-radius:10px; display:none; }
+  input { width:90%; padding:10px; margin:8px 0; border:none; border-radius:5px; }
+  button { width:95%; padding:10px; margin-top:10px; background:#4caf50; border:none; border-radius:5px; color:white; font-size:16px; cursor:pointer; }
+  #world { width:100vw; height:100vh; background:#3a3a3a; position:relative; display:none; overflow:hidden; }
+  .player { width:30px; height:40px; background:#00aaff; position:absolute; border-radius:5px; }
+  #chatBox { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); width:300px; }
+  #chatMessages { width:300px; height:120px; background:#00000080; overflow-y:auto; padding:5px; border-radius:5px; text-align:left; font-size:14px; }
 </style>
 </head>
 <body>
 
-<h1 id="title">Mini 2D Game</h1>
+<h1 id="title">Mini 2D Firebase World</h1>
 
-<!-- MENU -->
 <div id="menu" class="frame" style="display:block;">
-    <button onclick="showFrame('signup')">Sign Up</button>
-    <button onclick="showFrame('login')">Log In</button>
+  <button onclick="showFrame('signup')">Sign Up</button>
+  <button onclick="showFrame('login')">Log In</button>
 </div>
 
-<!-- SIGN UP -->
 <div id="signup" class="frame">
-    <h2>Create Account</h2>
-    <input id="su_name" placeholder="Username">
-    <input id="su_pass" type="password" placeholder="Password">
-    <button onclick="signUp()">Create</button>
-    <button onclick="showFrame('menu')">Back</button>
+  <h2>Create Account</h2>
+  <input id="su_email" placeholder="Email">
+  <input id="su_pass" type="password" placeholder="Password">
+  <button onclick="signUp()">Create</button>
+  <button onclick="showFrame('menu')">Back</button>
 </div>
 
-<!-- LOGIN -->
 <div id="login" class="frame">
-    <h2>Log In</h2>
-    <input id="li_name" placeholder="Username">
-    <input id="li_pass" type="password" placeholder="Password">
-    <button onclick="logIn()">Enter</button>
-    <button onclick="showFrame('menu')">Back</button>
+  <h2>Log In</h2>
+  <input id="li_email" placeholder="Email">
+  <input id="li_pass" type="password" placeholder="Password">
+  <button onclick="logIn()">Enter</button>
+  <button onclick="showFrame('menu')">Back</button>
 </div>
 
-<!-- WORLD -->
 <div id="world">
-    <div id="chatBox">
-        <div id="chatMessages"></div>
-        <input id="chatInput" placeholder="Press Enter to chat">
-    </div>
+  <div id="chatBox">
+    <div id="chatMessages"></div>
+    <input id="chatInput" placeholder="Press Enter to chat">
+  </div>
 </div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
 
 <script>
-/* -------------------------
-   ACCOUNT SYSTEM
---------------------------*/
+// 🔧 Your Firebase config (safe to be public, security is in rules)
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
 
-let accounts = JSON.parse(localStorage.getItem("accounts") || "{}");
-let players = {};
-let currentPlayer = null;
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.database();
 
+let currentUser = null;
+let players = {};      // uid -> {x,y,element,name}
+let keys = {};
+
+/* UI */
 function showFrame(id) {
-    document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
-    document.getElementById(id).style.display = "block";
+  document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
+  document.getElementById(id).style.display = "block";
 }
 
+/* AUTH */
 function signUp() {
-    let name = su_name.value.trim();
-    let pass = su_pass.value;
-
-    if (!name || !pass) return alert("Fill everything");
-
-    if (accounts[name]) return alert("Name already taken");
-
-    accounts[name] = pass;
-    localStorage.setItem("accounts", JSON.stringify(accounts));
-
-    alert("Account created!");
-    showFrame("login");
+  const email = su_email.value.trim();
+  const pass  = su_pass.value;
+  if (!email || !pass) return alert("Fill everything");
+  auth.createUserWithEmailAndPassword(email, pass)
+    .then(() => alert("Account created! Now log in."))
+    .catch(e => alert(e.message));
 }
 
 function logIn() {
-    let name = li_name.value.trim();
-    let pass = li_pass.value;
-
-    if (accounts[name] && accounts[name] === pass) {
-        startGame(name);
-    } else {
-        alert("Wrong username or password");
-    }
+  const email = li_email.value.trim();
+  const pass  = li_pass.value;
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(e => alert(e.message));
 }
 
-/* -------------------------
-   GAME WORLD
---------------------------*/
-function startGame(name) {
-    document.getElementById("title").style.display = "none";
-    document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
-    document.getElementById("world").style.display = "block";
+auth.onAuthStateChanged(user => {
+  if (user) {
+    currentUser = user;
+    startGame();
+  } else {
+    currentUser = null;
+    document.getElementById("title").style.display = "block";
+    document.getElementById("world").style.display = "none";
+    showFrame("menu");
+  }
+});
 
-    currentPlayer = {
-        name: name,
-        x: 200,
-        y: 200,
-        element: createPlayerElement(name)
-    };
+/* GAME WORLD */
+function startGame() {
+  document.getElementById("title").style.display = "none";
+  document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
+  document.getElementById("world").style.display = "block";
 
-    players[name] = currentPlayer;
-    updatePlayerPosition(currentPlayer);
+  const uid = currentUser.uid;
+  const name = currentUser.email.split("@")[0];
+
+  // create/update own player node
+  const playerRef = db.ref("players/" + uid);
+  playerRef.set({ name, x: 200, y: 200 });
+  playerRef.onDisconnect().remove();
+
+  // listen to all players
+  db.ref("players").on("value", snap => {
+    const data = snap.val() || {};
+    // remove missing
+    for (let id in players) {
+      if (!data[id]) {
+        players[id].element.remove();
+        delete players[id];
+      }
+    }
+    // update / create
+    for (let id in data) {
+      const p = data[id];
+      if (!players[id]) {
+        players[id] = {
+          x: p.x, y: p.y, name: p.name,
+          element: createPlayerElement(p.name)
+        };
+      }
+      players[id].x = p.x;
+      players[id].y = p.y;
+      updatePlayerPosition(players[id]);
+    }
+  });
+
+  // movement loop
+  gameLoop();
+
+  // chat listener
+  db.ref("chat").limitToLast(50).on("child_added", snap => {
+    const msg = snap.val();
+    addChatMessage(msg.name + ": " + msg.text);
+  });
 }
 
 function createPlayerElement(name) {
-    let div = document.createElement("div");
-    div.className = "player";
-    div.innerHTML = `<span style='position:absolute;top:-18px;font-size:12px;'>${name}</span>`;
-    document.getElementById("world").appendChild(div);
-    return div;
+  const div = document.createElement("div");
+  div.className = "player";
+  div.innerHTML = `<span style="position:absolute;top:-18px;font-size:12px;">${name}</span>`;
+  document.getElementById("world").appendChild(div);
+  return div;
 }
 
 function updatePlayerPosition(p) {
-    p.element.style.left = p.x + "px";
-    p.element.style.top = p.y + "px";
+  p.element.style.left = p.x + "px";
+  p.element.style.top  = p.y + "px";
 }
 
-/* -------------------------
-   MOVEMENT
---------------------------*/
-let keys = {};
-
+/* MOVEMENT */
 document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
+document.addEventListener("keyup",   e => keys[e.key] = false);
 
 function gameLoop() {
-    if (currentPlayer) {
-        if (keys["a"] || keys["ArrowLeft"]) currentPlayer.x -= 3;
-        if (keys["d"] || keys["ArrowRight"]) currentPlayer.x += 3;
+  if (currentUser && players[currentUser.uid]) {
+    const me = players[currentUser.uid];
+    let moved = false;
 
-        if (currentPlayer.y < 400) currentPlayer.y += 3;
+    if (keys["a"] || keys["ArrowLeft"])  { me.x -= 3; moved = true; }
+    if (keys["d"] || keys["ArrowRight"]) { me.x += 3; moved = true; }
+    if (me.y < 400) { me.y += 3; moved = true; } // gravity
 
-        updatePlayerPosition(currentPlayer);
+    updatePlayerPosition(me);
+
+    if (moved) {
+      db.ref("players/" + currentUser.uid).update({ x: me.x, y: me.y });
     }
-    requestAnimationFrame(gameLoop);
+  }
+  requestAnimationFrame(gameLoop);
 }
-gameLoop();
 
-/* -------------------------
-   CHAT SYSTEM
---------------------------*/
-document.getElementById("chatInput").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") {
-        let msg = this.value.trim();
-        if (msg.length > 0) {
-            addChatMessage(currentPlayer.name + ": " + msg);
-        }
-        this.value = "";
-    }
+/* CHAT */
+document.getElementById("chatInput").addEventListener("keydown", e => {
+  if (e.key === "Enter" && currentUser) {
+    const text = chatInput.value.trim();
+    if (!text) return;
+    const name = currentUser.email.split("@")[0];
+    const msgRef = db.ref("chat").push();
+    msgRef.set({
+      uid: currentUser.uid,
+      name,
+      text,
+      ts: firebase.database.ServerValue.TIMESTAMP
+    });
+    chatInput.value = "";
+  }
 });
 
 function addChatMessage(text) {
-    let box = document.getElementById("chatMessages");
-    let div = document.createElement("div");
-    div.textContent = text;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
+  const box = document.getElementById("chatMessages");
+  const div = document.createElement("div");
+  div.textContent = text;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
 }
 </script>
 
