@@ -75,33 +75,21 @@
       position: absolute;
       top: 15px;
       left: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: gray;
+      font-size: 18px;
+      font-weight: bold;
     }
 
     .logout {
       position: absolute;
       top: 15px;
       right: 15px;
-      padding: 8px 12px;
+      padding: 8px 14px;
       background: #3b3f7a;
       border: none;
       border-radius: 6px;
       color: white;
       cursor: pointer;
-    }
-
-    .upload {
-      font-size: 12px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -116,14 +104,11 @@
   <input type="text" id="username" placeholder="Username">
   <input type="password" id="password" placeholder="Password">
 
-  <input type="file" id="avatar" class="upload" accept="image/*">
-
   <button onclick="submitForm()" id="actionBtn">Sign up</button>
 </div>
 
 <div id="dashboard">
   <div class="topbar">
-    <img id="avatarImg" class="avatar">
     <span id="displayName"></span>
   </div>
 
@@ -153,7 +138,6 @@
   function submitForm() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
-    const file = document.getElementById('avatar').files[0];
 
     if (!username || !password) {
       alert('Fill all fields');
@@ -169,19 +153,11 @@
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const avatar = e.target.result;
+      users.push({ username, password });
+      saveUsers(users);
+      localStorage.setItem('currentUser', JSON.stringify({ username }));
 
-        users.push({ username, password, avatar });
-        saveUsers(users);
-        localStorage.setItem('currentUser', JSON.stringify({ username, avatar }));
-
-        showDashboard(username, avatar);
-      };
-
-      if (file) reader.readAsDataURL(file);
-      else reader.onload({ target: { result: '' } });
+      showDashboard(username);
 
     } else {
       const user = users.find(u => u.username === username && u.password === password);
@@ -191,17 +167,16 @@
         return;
       }
 
-      localStorage.setItem('currentUser', JSON.stringify({ username: user.username, avatar: user.avatar }));
-      showDashboard(user.username, user.avatar);
+      localStorage.setItem('currentUser', JSON.stringify({ username: user.username }));
+      showDashboard(user.username);
     }
   }
 
-  function showDashboard(name, avatar) {
+  function showDashboard(name) {
     document.getElementById('auth').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
 
     document.getElementById('displayName').innerText = name;
-    document.getElementById('avatarImg').src = avatar || 'https://via.placeholder.com/40';
   }
 
   function logout() {
@@ -213,7 +188,7 @@
   window.onload = function() {
     const current = JSON.parse(localStorage.getItem('currentUser'));
     if (current) {
-      showDashboard(current.username, current.avatar);
+      showDashboard(current.username);
     }
   }
 </script>
