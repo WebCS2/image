@@ -62,7 +62,6 @@
       border-radius: 5px;
     }
 
-    /* CHAT */
     #chatBox {
       position: fixed;
       bottom: 20px;
@@ -86,6 +85,7 @@
       font-size: 16px;
       color: white;
       backdrop-filter: blur(6px);
+      box-sizing: border-box;
     }
 
     #chatInput {
@@ -95,6 +95,7 @@
       border: none;
       border-radius: 8px;
       font-size: 16px;
+      box-sizing: border-box;
     }
 
     #statusBar {
@@ -123,7 +124,7 @@
   <h2>Create Account</h2>
   <input id="su_email" placeholder="Email">
   <input id="su_pass" type="password" placeholder="Password">
-  <button onclick="signUp()">Create</button>
+  <button onclick="signUp()">Create & Join</button>
   <button onclick="showFrame('menu')">Back</button>
 </div>
 
@@ -143,7 +144,6 @@
   </div>
 </div>
 
-<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
@@ -168,6 +168,9 @@
   let keys = {};
 
   const playerCountSpan = document.getElementById("playerCount");
+  const worldEl = document.getElementById("world");
+  const chatInput = document.getElementById("chatInput");
+  const chatMessages = document.getElementById("chatMessages");
 
   function showFrame(id) {
     document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
@@ -177,27 +180,40 @@
   function signUp() {
     const email = su_email.value.trim();
     const pass  = su_pass.value;
-    if (!email || !pass) return alert("Fill everything");
+
+    if (!email || !pass) {
+      alert("Fill everything");
+      return;
+    }
 
     auth.createUserWithEmailAndPassword(email, pass)
-      .then(() => alert("Account created! Now log in."))
-      .catch(e => alert(e.message));
+      .then(() => {
+        // User is automatically signed in → onAuthStateChanged will fire → startGame()
+        console.log("Signed up & auto-logged in");
+      })
+      .catch(e => {
+        alert("Signup error: " + e.message);
+      });
   }
 
   function logIn() {
     const email = li_email.value.trim();
     const pass  = li_pass.value;
 
-    if (!email || !pass) return alert("Fill everything");
+    if (!email || !pass) {
+      alert("Fill everything");
+      return;
+    }
 
     auth.signInWithEmailAndPassword(email, pass)
-      .catch(e => alert("Login error: " + e.message));
+      .catch(e => {
+        alert("Login error: " + e.message);
+      });
   }
 
   auth.onAuthStateChanged(user => {
     if (user) {
       const playersRef = db.ref("players");
-
       playersRef.once("value").then(snap => {
         const count = snap.numChildren();
         if (count >= 10) {
@@ -205,15 +221,13 @@
           auth.signOut();
           return;
         }
-
         currentUser = user;
         startGame();
       });
-
     } else {
       currentUser = null;
       document.getElementById("title").style.display = "block";
-      document.getElementById("world").style.display = "none";
+      worldEl.style.display = "none";
       showFrame("menu");
     }
   });
@@ -221,7 +235,7 @@
   function startGame() {
     document.getElementById("title").style.display = "none";
     document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
-    document.getElementById("world").style.display = "block";
+    worldEl.style.display = "block";
 
     const uid = currentUser.uid;
     const name = currentUser.email.split("@")[0];
@@ -267,7 +281,7 @@
     const div = document.createElement("div");
     div.className = "player";
     div.innerHTML = `<span style="position:absolute;top:-18px;font-size:12px;">${name}</span>`;
-    world.appendChild(div);
+    worldEl.appendChild(div);
     return div;
   }
 
@@ -315,11 +329,10 @@
   });
 
   function addChatMessage(text) {
-    const box = chatMessages;
     const div = document.createElement("div");
     div.textContent = text;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 </script>
 
