@@ -1,111 +1,129 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Pixelia Worlds</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixelia Worlds</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-  body {
-    margin: 0;
-    background: #1e1e1e;
-    color: white;
-    font-family: Arial;
-    overflow: hidden;
-    text-align: center;
-  }
+  <style>
+    body {
+      margin: 0;
+      background: #1e1e1e;
+      color: white;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      text-align: center;
+    }
 
-  .frame {
-    width: 300px;
-    margin: 80px auto;
-    padding: 20px;
-    background: #2b2b2b;
-    border-radius: 10px;
-    display: none;
-  }
+    h1 {
+      margin-top: 30px;
+    }
 
-  input {
-    width: 90%;
-    padding: 10px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 5px;
-  }
+    .frame {
+      width: 300px;
+      margin: 80px auto;
+      padding: 20px;
+      background: #2b2b2b;
+      border-radius: 10px;
+      display: none;
+    }
 
-  button {
-    width: 95%;
-    padding: 10px;
-    margin-top: 10px;
-    background: #4caf50;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-  }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 5px;
+    }
 
-  #world {
-    width: 100vw;
-    height: 100vh;
-    background: #3a3a3a;
-    position: relative;
-    display: none;
-    overflow: hidden;
-  }
+    button {
+      width: 95%;
+      padding: 10px;
+      margin-top: 10px;
+      background: #4caf50;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
 
-  .player {
-    width: 30px;
-    height: 40px;
-    background: #00aaff;
-    position: absolute;
-    border-radius: 5px;
-  }
+    #world {
+      width: 100vw;
+      height: 100vh;
+      background: #3a3a3a;
+      position: relative;
+      display: none;
+      overflow: hidden;
+    }
 
-  /* ⭐ CENTERED MOBILE CHAT */
-  #chatBox {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 350px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 999;
-  }
+    .player {
+      width: 30px;
+      height: 40px;
+      background: #00aaff;
+      position: absolute;
+      border-radius: 5px;
+    }
 
-  #chatMessages {
-    width: 100%;
-    height: 140px;
-    background: #00000090;
-    overflow-y: auto;
-    padding: 8px;
-    border-radius: 8px;
-    text-align: left;
-    font-size: 15px;
-  }
+    /* Centered, readable mobile chat */
+    #chatBox {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 95%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 9999;
+    }
 
-  #chatInput {
-    width: 100%;
-    padding: 10px;
-    margin-top: 6px;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-  }
-</style>
+    #chatMessages {
+      width: 100%;
+      height: 180px;
+      background: rgba(0, 0, 0, 0.8);
+      overflow-y: auto;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 16px;
+      color: #fff;
+      box-sizing: border-box;
+      backdrop-filter: blur(6px);
+    }
+
+    #chatInput {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    #statusBar {
+      position: fixed;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.6);
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      z-index: 9999;
+    }
+  </style>
 </head>
 <body>
 
 <h1 id="title">Pixelia Worlds</h1>
 
-<!-- MENU -->
 <div id="menu" class="frame" style="display:block;">
   <button onclick="showFrame('signup')">Sign Up</button>
   <button onclick="showFrame('login')">Log In</button>
 </div>
 
-<!-- SIGN UP -->
 <div id="signup" class="frame">
   <h2>Create Account</h2>
   <input id="su_email" placeholder="Email">
@@ -114,7 +132,6 @@
   <button onclick="showFrame('menu')">Back</button>
 </div>
 
-<!-- LOGIN -->
 <div id="login" class="frame">
   <h2>Log In</h2>
   <input id="li_email" placeholder="Email">
@@ -123,178 +140,186 @@
   <button onclick="showFrame('menu')">Back</button>
 </div>
 
-<!-- GAME WORLD -->
 <div id="world">
+  <div id="statusBar">Players online: <span id="playerCount">0</span>/10</div>
   <div id="chatBox">
     <div id="chatMessages"></div>
     <input id="chatInput" placeholder="Type message and press Enter">
   </div>
 </div>
 
-<!-- FIREBASE -->
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
+script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
 
 <script>
-// 🔥 Your Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyCx4dKsPQ5ph7g7P6E7ZAv7NarT0uQhZGQ",
-  authDomain: "pixeliaworlds.firebaseapp.com",
-  projectId: "pixeliaworlds",
-  storageBucket: "pixeliaworlds.firebasestorage.app",
-  messagingSenderId: "261360406874",
-  appId: "1:261360406874:web:c516b77a56eb529cfea363",
-  measurementId: "G-DRNSDL3LRD"
-};
+  // Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCx4dKsPQ5ph7g7P6E7ZAv7NarT0uQhZGQ",
+    authDomain: "pixeliaworlds.firebaseapp.com",
+    projectId: "pixeliaworlds",
+    storageBucket: "pixeliaworlds.firebasestorage.app",
+    messagingSenderId: "261360406874",
+    appId: "1:261360406874:web:c516b77a56eb529cfea363",
+    measurementId: "G-DRNSDL3LRD"
+  };
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db   = firebase.database();
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db   = firebase.database();
 
-let currentUser = null;
-let players = {};
-let keys = {};
+  let currentUser = null;
+  let players = {};
+  let keys = {};
 
-/* UI */
-function showFrame(id) {
-  document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
-  document.getElementById(id).style.display = "block";
-}
+  const playerCountSpan = document.getElementById("playerCount");
 
-/* AUTH */
-function signUp() {
-  const email = su_email.value.trim();
-  const pass  = su_pass.value;
-  if (!email || !pass) return alert("Fill everything");
-  auth.createUserWithEmailAndPassword(email, pass)
-    .then(() => alert("Account created! Now log in."))
-    .catch(e => alert(e.message));
-}
-
-function logIn() {
-  const email = li_email.value.trim();
-  const pass  = li_pass.value;
-  auth.signInWithEmailAndPassword(email, pass)
-    .catch(e => alert(e.message));
-}
-
-auth.onAuthStateChanged(user => {
-  if (user) {
-    currentUser = user;
-    startGame();
-  } else {
-    currentUser = null;
-    document.getElementById("title").style.display = "block";
-    document.getElementById("world").style.display = "none";
-    showFrame("menu");
+  function showFrame(id) {
+    document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
+    document.getElementById(id).style.display = "block";
   }
-});
 
-/* GAME */
-function startGame() {
-  document.getElementById("title").style.display = "none";
-  document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
-  document.getElementById("world").style.display = "block";
+  function signUp() {
+    const email = su_email.value.trim();
+    const pass  = su_pass.value;
+    if (!email || !pass) return alert("Fill everything");
+    auth.createUserWithEmailAndPassword(email, pass)
+      .then(() => alert("Account created! Now log in."))
+      .catch(e => alert(e.message));
+  }
 
-  const uid = currentUser.uid;
-  const name = currentUser.email.split("@")[0];
+  function logIn() {
+    const email = li_email.value.trim();
+    const pass  = li_pass.value;
+    auth.signInWithEmailAndPassword(email, pass)
+      .catch(e => alert(e.message));
+  }
 
-  const playerRef = db.ref("players/" + uid);
-  playerRef.set({ name, x: 200, y: 200 });
-  playerRef.onDisconnect().remove();
-
-  db.ref("players").on("value", snap => {
-    const data = snap.val() || {};
-
-    for (let id in players) {
-      if (!data[id]) {
-        players[id].element.remove();
-        delete players[id];
-      }
-    }
-
-    for (let id in data) {
-      const p = data[id];
-      if (!players[id]) {
-        players[id] = {
-          x: p.x, y: p.y, name: p.name,
-          element: createPlayerElement(p.name)
-        };
-      }
-      players[id].x = p.x;
-      players[id].y = p.y;
-      updatePlayerPosition(players[id]);
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      const playersRef = db.ref("players");
+      playersRef.once("value").then(snap => {
+        const count = snap.numChildren();
+        if (count >= 10) {
+          alert("The server is full (10/10 players). Try again later.");
+          auth.signOut();
+          return;
+        }
+        currentUser = user;
+        startGame();
+      });
+    } else {
+      currentUser = null;
+      document.getElementById("title").style.display = "block";
+      document.getElementById("world").style.display = "none";
+      showFrame("menu");
     }
   });
 
-  gameLoop();
+  function startGame() {
+    document.getElementById("title").style.display = "none";
+    document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
+    document.getElementById("world").style.display = "block";
 
-  db.ref("chat").limitToLast(50).on("child_added", snap => {
-    const msg = snap.val();
-    addChatMessage(msg.name + ": " + msg.text);
-  });
-}
-
-function createPlayerElement(name) {
-  const div = document.createElement("div");
-  div.className = "player";
-  div.innerHTML = `<span style="position:absolute;top:-18px;font-size:12px;">${name}</span>`;
-  document.getElementById("world").appendChild(div);
-  return div;
-}
-
-function updatePlayerPosition(p) {
-  p.element.style.left = p.x + "px";
-  p.element.style.top  = p.y + "px";
-}
-
-/* MOVEMENT */
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup",   e => keys[e.key] = false);
-
-function gameLoop() {
-  if (currentUser && players[currentUser.uid]) {
-    const me = players[currentUser.uid];
-    let moved = false;
-
-    if (keys["a"] || keys["ArrowLeft"])  { me.x -= 3; moved = true; }
-    if (keys["d"] || keys["ArrowRight"]) { me.x += 3; moved = true; }
-    if (me.y < 400) { me.y += 3; moved = true; }
-
-    updatePlayerPosition(me);
-
-    if (moved) {
-      db.ref("players/" + currentUser.uid).update({ x: me.x, y: me.y });
-    }
-  }
-  requestAnimationFrame(gameLoop);
-}
-
-/* CHAT */
-document.getElementById("chatInput").addEventListener("keydown", e => {
-  if (e.key === "Enter" && currentUser) {
-    const text = chatInput.value.trim();
-    if (!text) return;
+    const uid = currentUser.uid;
     const name = currentUser.email.split("@")[0];
-    const msgRef = db.ref("chat").push();
-    msgRef.set({
-      uid: currentUser.uid,
-      name,
-      text,
-      ts: firebase.database.ServerValue.TIMESTAMP
-    });
-    chatInput.value = "";
-  }
-});
 
-function addChatMessage(text) {
-  const box = document.getElementById("chatMessages");
-  const div = document.createElement("div");
-  div.textContent = text;
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
-}
+    const playerRef = db.ref("players/" + uid);
+    playerRef.set({ name, x: 200, y: 200 });
+    playerRef.onDisconnect().remove();
+
+    db.ref("players").on("value", snap => {
+      const data = snap.val() || {};
+      const count = Object.keys(data).length;
+      playerCountSpan.textContent = count;
+
+      for (let id in players) {
+        if (!data[id]) {
+          players[id].element.remove();
+          delete players[id];
+        }
+      }
+
+      for (let id in data) {
+        const p = data[id];
+        if (!players[id]) {
+          players[id] = {
+            x: p.x, y: p.y, name: p.name,
+            element: createPlayerElement(p.name)
+          };
+        }
+        players[id].x = p.x;
+        players[id].y = p.y;
+        updatePlayerPosition(players[id]);
+      }
+    });
+
+    db.ref("chat").limitToLast(50).on("child_added", snap => {
+      const msg = snap.val();
+      addChatMessage(msg.name + ": " + msg.text);
+    });
+
+    gameLoop();
+  }
+
+  function createPlayerElement(name) {
+    const div = document.createElement("div");
+    div.className = "player";
+    div.innerHTML = `<span style="position:absolute;top:-18px;font-size:12px;">${name}</span>`;
+    document.getElementById("world").appendChild(div);
+    return div;
+  }
+
+  function updatePlayerPosition(p) {
+    p.element.style.left = p.x + "px";
+    p.element.style.top  = p.y + "px";
+  }
+
+  document.addEventListener("keydown", e => keys[e.key] = true);
+  document.addEventListener("keyup",   e => keys[e.key] = false);
+
+  function gameLoop() {
+    if (currentUser && players[currentUser.uid]) {
+      const me = players[currentUser.uid];
+      let moved = false;
+
+      if (keys["a"] || keys["ArrowLeft"])  { me.x -= 3; moved = true; }
+      if (keys["d"] || keys["ArrowRight"]) { me.x += 3; moved = true; }
+      if (me.y < 400) { me.y += 3; moved = true; }
+
+      updatePlayerPosition(me);
+
+      if (moved) {
+        db.ref("players/" + currentUser.uid).update({ x: me.x, y: me.y });
+      }
+    }
+    requestAnimationFrame(gameLoop);
+  }
+
+  document.getElementById("chatInput").addEventListener("keydown", e => {
+    if (e.key === "Enter" && currentUser) {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      const name = currentUser.email.split("@")[0];
+      const msgRef = db.ref("chat").push();
+      msgRef.set({
+        uid: currentUser.uid,
+        name,
+        text,
+        ts: firebase.database.ServerValue.TIMESTAMP
+      });
+      chatInput.value = "";
+    }
+  });
+
+  function addChatMessage(text) {
+    const box = document.getElementById("chatMessages");
+    const div = document.createElement("div");
+    div.textContent = text;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+  }
 </script>
 
 </body>
