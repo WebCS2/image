@@ -102,7 +102,7 @@
     <div class="tab" id="loginTab" onclick="setMode(false)">Sign in</div>
   </div>
 
-  <input type="text" id="username" placeholder="Username">
+  <input type="text" id="username" placeholder="Username" maxlength="10">
   <input type="password" id="password" placeholder="Password">
 
   <button onclick="submitForm()" id="actionBtn">Sign up</button>
@@ -143,6 +143,11 @@
       return;
     }
 
+    if (username.length > 10) {
+      alert("Username must be 10 characters or less");
+      return;
+    }
+
     const users = getUsers();
 
     if (isSignup) {
@@ -156,8 +161,10 @@
       saveUsers(users);
       localStorage.setItem('currentUser', JSON.stringify({ username }));
       showDashboard(username);
+
     } else {
       const user = users.find(u => u.username === username && u.password === password);
+
       if (!user) {
         alert('Invalid login');
         return;
@@ -190,3 +197,4 @@
 
 </body>
 </html>
+//// working
