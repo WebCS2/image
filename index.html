@@ -104,9 +104,9 @@
       position: absolute;
       top: 80px;
       left: 20px;
-      width: 200px;
+      width: 180px;
       background: #1b1d36;
-      padding: 15px;
+      padding: 12px;
       border-radius: 10px;
     }
 
@@ -114,59 +114,33 @@
       display: none;
       position: absolute;
       top: 80px;
-      left: 240px;
-      width: 260px;
+      left: 210px;
+      width: 180px;
       background: #1b1d36;
-      padding: 20px;
+      padding: 12px;
       border-radius: 10px;
     }
 
     .coinGame button {
       width: 48%;
-      margin-right: 2%;
-    }
-
-    .coinGame button:last-of-type {
-      margin-right: 0;
     }
 
     @media (max-width: 480px) {
-      .box {
-        width: 95%;
-        padding: 28px;
-      }
-
-      .topbar {
-        font-size: 20px;
-      }
-
       .coinFrame {
-        top: 70px;
-        left: 10px;
-        width: 160px;
-        padding: 10px;
-      }
-
-      .coinFrame h3 {
-        font-size: 14px;
-        margin: 0 0 6px 0;
-      }
-
-      .coinFrame button {
+        width: 140px;
         padding: 8px;
-        font-size: 14px;
+        left: 10px;
       }
 
       .coinGame {
-        top: 70px;
-        left: 180px;
-        width: 160px;
-        padding: 10px;
+        width: 140px;
+        padding: 8px;
+        left: 160px;
       }
 
+      .coinFrame h3,
       .coinGame h3 {
         font-size: 14px;
-        margin: 0 0 6px 0;
       }
 
       .coinGame button {
@@ -175,7 +149,7 @@
       }
 
       .coinGame input {
-        padding: 8px;
+        padding: 6px;
         font-size: 12px;
       }
 
@@ -294,11 +268,6 @@
       return;
     }
 
-    if (typeof user.bytecoins !== 'number') {
-      user.bytecoins = 10;
-      saveUsers(users);
-    }
-
     localStorage.setItem("currentUser", user.username);
     showDashboard(user.username);
   }
@@ -311,7 +280,7 @@
     const user = users.find(u => u.username === name);
 
     document.getElementById('displayName').innerText = name;
-    document.getElementById('coinsDisplay').innerText = user.bytecoins ?? 0;
+    document.getElementById('coinsDisplay').innerText = user.bytecoins;
   }
 
   function logout() {
@@ -351,35 +320,21 @@
     let currentName = localStorage.getItem('currentUser');
     let user = users.find(u => u.username === currentName);
 
-    if (!user) {
-      alert("User not found");
-      return;
-    }
-
     if (bet > user.bytecoins) {
       alert("Not enough Bytecoins");
       return;
     }
 
-    const tax = Math.floor(bet * 0.10);
-
-    let krooks = users.find(u => u.username.toLowerCase() === "krooks");
-    if (krooks) {
-      if (typeof krooks.bytecoins !== 'number') {
-        krooks.bytecoins = 0;
-      }
-      krooks.bytecoins += tax;
-    }
-
     user.bytecoins -= bet;
 
-    const flip = Math.random() < 0.5 ? "heads" : "tails";
+    const flip = Math.random() < 0.3 ? "heads" : "tails";
 
     if (flip === currentPick) {
-      const winnings = bet * 2;
+      const winnings = Math.floor(bet * 0.90);
       user.bytecoins += winnings;
+
       document.getElementById('resultText').innerText =
-        `You WON! Coin landed on ${flip}. You earned ${winnings} Bytecoins.`;
+        `You WON! Coin landed on ${flip}. You earned ${winnings} Bytecoins (90% win).`;
     } else {
       document.getElementById('resultText').innerText =
         `You lost! Coin landed on ${flip}.`;
