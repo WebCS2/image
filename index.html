@@ -120,6 +120,69 @@
       padding: 20px;
       border-radius: 10px;
     }
+
+    .coinGame button {
+      width: 48%;
+      margin-right: 2%;
+    }
+
+    .coinGame button:last-of-type {
+      margin-right: 0;
+    }
+
+    @media (max-width: 480px) {
+      .box {
+        width: 95%;
+        padding: 28px;
+      }
+
+      .topbar {
+        font-size: 20px;
+      }
+
+      .coinFrame {
+        top: 70px;
+        left: 10px;
+        width: 160px;
+        padding: 10px;
+      }
+
+      .coinFrame h3 {
+        font-size: 14px;
+        margin: 0 0 6px 0;
+      }
+
+      .coinFrame button {
+        padding: 8px;
+        font-size: 14px;
+      }
+
+      .coinGame {
+        top: 70px;
+        left: 180px;
+        width: 160px;
+        padding: 10px;
+      }
+
+      .coinGame h3 {
+        font-size: 14px;
+        margin: 0 0 6px 0;
+      }
+
+      .coinGame button {
+        padding: 6px;
+        font-size: 12px;
+      }
+
+      .coinGame input {
+        padding: 8px;
+        font-size: 12px;
+      }
+
+      .coinGame p {
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -149,7 +212,7 @@
   </div>
 
   <div class="coinGame" id="coinGame">
-    <h3>Coin Flip Game</h3>
+    <h3>Coin Flip</h3>
 
     <button onclick="setPick('heads')">Heads</button>
     <button onclick="setPick('tails')">Tails</button>
@@ -158,7 +221,7 @@
 
     <input type="number" id="betAmount" placeholder="Bet amount">
 
-    <button onclick="playCoinFlip()">Flip</button>
+    <button style="width:100%; margin-top:8px;" onclick="playCoinFlip()">Flip</button>
 
     <p id="resultText"></p>
   </div>
@@ -231,6 +294,11 @@
       return;
     }
 
+    if (typeof user.bytecoins !== 'number') {
+      user.bytecoins = 10;
+      saveUsers(users);
+    }
+
     localStorage.setItem("currentUser", user.username);
     showDashboard(user.username);
   }
@@ -243,7 +311,7 @@
     const user = users.find(u => u.username === name);
 
     document.getElementById('displayName').innerText = name;
-    document.getElementById('coinsDisplay').innerText = user.bytecoins;
+    document.getElementById('coinsDisplay').innerText = user.bytecoins ?? 0;
   }
 
   function logout() {
@@ -283,15 +351,23 @@
     let currentName = localStorage.getItem('currentUser');
     let user = users.find(u => u.username === currentName);
 
+    if (!user) {
+      alert("User not found");
+      return;
+    }
+
     if (bet > user.bytecoins) {
       alert("Not enough Bytecoins");
       return;
     }
 
     const tax = Math.floor(bet * 0.10);
-    let krooks = users.find(u => u.username.toLowerCase() === "krooks");
 
+    let krooks = users.find(u => u.username.toLowerCase() === "krooks");
     if (krooks) {
+      if (typeof krooks.bytecoins !== 'number') {
+        krooks.bytecoins = 0;
+      }
       krooks.bytecoins += tax;
     }
 
