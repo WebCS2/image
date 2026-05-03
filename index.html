@@ -100,7 +100,6 @@
       width: auto;
     }
 
-    /* Coin Flip Frame */
     .coinFrame {
       position: absolute;
       top: 80px;
@@ -151,6 +150,18 @@
         font-size: 14px;
         padding: 7px 14px;
       }
+
+      .coinFrame {
+        top: 80px;
+        left: 10px;
+        width: calc(100% - 20px);
+      }
+
+      .coinGame {
+        top: 200px;
+        left: 10px;
+        width: calc(100% - 20px);
+      }
     }
 
   </style>
@@ -176,13 +187,14 @@
 
   <button class="logout" onclick="logout()">Log out</button>
 
-  <!-- LEFT FRAME -->
+  <!-- LEFT FRAME: Coin Flip -->
   <div class="coinFrame">
     <h3>Coin Flip</h3>
+    <p>Bet Bytecoins and try your luck.</p>
     <button onclick="openCoinFlip()">Play</button>
   </div>
 
-  <!-- COIN FLIP GAME -->
+  <!-- COIN FLIP GAME FRAME -->
   <div class="coinGame" id="coinGame">
     <h3>Coin Flip Game</h3>
 
@@ -234,31 +246,50 @@
       return;
     }
 
-    const users = getUsers();
+    let users = getUsers();
 
     if (isSignup) {
-      const exists = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+      // BLOCK DUPLICATE USERNAMES (CASE-INSENSITIVE)
+      const exists = users.some(
+        u => u.username.toLowerCase() === username.toLowerCase()
+      );
+
       if (exists) {
-        alert('Username already taken');
+        alert("Username already taken. Choose another one.");
         return;
       }
 
-      users.push({ username, password, bytecoins: 10 });
+      // NEW USER WITH 10 BYTECOINS
+      users.push({
+        username: username,
+        password: password,
+        bytecoins: 10
+      });
+
       saveUsers(users);
       localStorage.setItem('currentUser', username);
       showDashboard(username);
-
-    } else {
-      const user = users.find(u => u.username === username && u.password === password);
-
-      if (!user) {
-        alert('Invalid login');
-        return;
-      }
-
-      localStorage.setItem('currentUser', user.username);
-      showDashboard(user.username);
+      return;
     }
+
+    // SIGN IN
+    const user = users.find(
+      u => u.username === username && u.password === password
+    );
+
+    if (!user) {
+      alert('Invalid login');
+      return;
+    }
+
+    // If old user without bytecoins, give default 10
+    if (typeof user.bytecoins !== 'number') {
+      user.bytecoins = 10;
+      saveUsers(users);
+    }
+
+    localStorage.setItem('currentUser', user.username);
+    showDashboard(user.username);
   }
 
   function showDashboard(name) {
@@ -269,7 +300,7 @@
     const user = users.find(u => u.username === name);
 
     document.getElementById('displayName').innerText = name;
-    document.getElementById('coinsDisplay').innerText = user.bytecoins;
+    document.getElementById('coinsDisplay').innerText = user.bytecoins ?? 0;
   }
 
   function logout() {
@@ -283,7 +314,7 @@
     if (current) showDashboard(current);
   };
 
-  /* ---------------- COIN FLIP ---------------- */
+  // --------- COIN FLIP ---------
 
   function openCoinFlip() {
     document.getElementById('coinGame').style.display = 'block';
@@ -296,6 +327,7 @@
 
   function playCoinFlip() {
     const bet = parseInt(document.getElementById('betAmount').value);
+
     if (!currentPick) {
       alert("Pick heads or tails");
       return;
@@ -306,35 +338,43 @@
     }
 
     let users = getUsers();
-    let current = localStorage.getItem('currentUser');
-    let user = users.find(u => u.username === current);
+    let currentName = localStorage.getItem('currentUser');
+    let user = users.find(u => u.username === currentName);
+
+    if (!user) {
+      alert("User not found");
+      return;
+    }
 
     if (bet > user.bytecoins) {
       alert("Not enough Bytecoins");
       return;
     }
 
-    // TAX CALCULATION
+    // 10% TAX TO KROOKS (IF EXISTS)
     const tax = Math.floor(bet * 0.10);
-
-    // SEND TAX TO KROOKS IF EXISTS
     let krooks = users.find(u => u.username.toLowerCase() === "krooks");
     if (krooks) {
-      krooks.bytecoins += tax;
+      krooks.bytecoins = (krooks.bytecoins ?? 0) + tax;
     }
 
-    user.bytecoins -= bet; // remove bet
+    // REMOVE BET FROM USER
+    user.bytecoins -= bet;
 
+    // COIN FLIP
     const flip = Math.random() < 0.5 ? "heads" : "tails";
 
     if (flip === currentPick) {
-      const winnings = bet * 2 - tax;
+      // USER WINS: GETS 2x BET
+      const winnings = bet * 2;
       user.bytecoins += winnings;
       document.getElementById('resultText').innerText =
-        "You WON! Coin landed on " + flip + ". You earned " + winnings + " Bytecoins.";
+        "You WON! Coin landed on " + flip +
+        ". You earned " + winnings + " Bytecoins. (10% of your bet went to Krooks)";
     } else {
       document.getElementById('resultText').innerText =
-        "You lost! Coin landed on " + flip + ".";
+        "You lost! Coin landed on " + flip +
+        ". (10% of your bet went to Krooks if Krooks exists)";
     }
 
     saveUsers(users);
