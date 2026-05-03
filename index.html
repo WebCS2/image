@@ -133,7 +133,6 @@
 <div id="signup" class="frame">
   <h2>Create Account</h2>
   <input id="su_username" placeholder="Username">
-  <input id="su_email" placeholder="Email">
   <input id="su_pass" type="password" placeholder="Password">
   <button onclick="signUp()">Create & Join</button>
   <button onclick="showFrame('menu')">Back</button>
@@ -141,7 +140,7 @@
 
 <div id="login" class="frame">
   <h2>Log In</h2>
-  <input id="li_email" placeholder="Email">
+  <input id="li_username" placeholder="Username">
   <input id="li_pass" type="password" placeholder="Password">
   <button onclick="logIn()">Enter</button>
   <button onclick="showFrame('menu')">Back</button>
@@ -158,7 +157,6 @@
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
 
 <script>
@@ -173,84 +171,97 @@
   };
 
   firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db   = firebase.database();
+  const db = firebase.database();
 
   let currentUser = null;
   let players = {};
   let keys = {};
 
-  const playerCountSpan = document.getElementById("playerCount");
   const worldEl = document.getElementById("world");
   const chatInput = document.getElementById("chatInput");
   const chatMessages = document.getElementById("chatMessages");
+  const playerCountSpan = document.getElementById("playerCount");
 
   function showFrame(id) {
     document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
     document.getElementById(id).style.display = "block";
   }
 
-  function signUp() {
-    const username = su_username.value.trim();
-    const email = su_email.value.trim();
-    const pass  = su_pass.value;
-
-    if (!username || !email || !pass) return alert("Fill everything");
-
-    auth.createUserWithEmailAndPassword(email, pass)
-      .then(cred => {
-        return db.ref("usernames/" + cred.user.uid).set({ username });
-      })
-      .catch(e => alert("Signup error: " + e.message));
+  async function hashPassword(password) {
+    const msgUint8 = new TextEncoder().encode(password);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
   }
 
-  function logIn() {
-    const email = li_email.value.trim();
-    const pass  = li_pass.value;
+  async function signUp() {
+    const username = su_username.value.trim();
+    const pass = su_pass.value;
 
-    if (!email || !pass) return alert("Fill everything");
+    if (!username || !pass) return alert("Fill everything");
 
-    auth.signInWithEmailAndPassword(email, pass)
-      .catch(e => alert("Login error: " + e.message));
+    const accRef = db.ref("accounts/" + username);
+    const snap = await accRef.once("value");
+
+    if (snap.exists()) return alert("Username already taken");
+
+    const hash = await hashPassword(pass);
+
+    await accRef.set({
+      username,
+      passwordHash: hash
+    });
+
+    currentUser = username;
+    startGame();
+  }
+
+  async function logIn() {
+    const username = li_username.value.trim();
+    const pass = li_pass.value;
+
+    if (!username || !pass) return alert("Fill everything");
+
+    const accRef = db.ref("accounts/" + username);
+    const snap = await accRef.once("value");
+
+    if (!snap.exists()) return alert("User not found");
+
+    const data = snap.val();
+    const hash = await hashPassword(pass);
+
+    if (hash !== data.passwordHash) return alert("Wrong password");
+
+    currentUser = username;
+    startGame();
   }
 
   function logout() {
-    auth.signOut();
-  }
-
-  auth.onAuthStateChanged(async user => {
-    if (user) {
-      const playersRef = db.ref("players");
-      const snap = await playersRef.once("value");
-
-      if (snap.numChildren() >= 10) {
-        alert("Server full (10/10). Try later.");
-        auth.signOut();
-        return;
-      }
-
-      currentUser = user;
-      startGame();
-    } else {
-      currentUser = null;
-      worldEl.style.display = "none";
-      document.getElementById("title").style.display = "block";
-      showFrame("menu");
+    if (currentUser) {
+      db.ref("players/" + currentUser).remove();
     }
-  });
+    currentUser = null;
+    worldEl.style.display = "none";
+    document.getElementById("title").style.display = "block";
+    showFrame("menu");
+  }
 
   async function startGame() {
     document.getElementById("title").style.display = "none";
     document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
     worldEl.style.display = "block";
 
-    const uid = currentUser.uid;
+    const playersRef = db.ref("players");
+    const snap = await playersRef.once("value");
 
-    const usernameSnap = await db.ref("usernames/" + uid).once("value");
-    const username = usernameSnap.val().username;
+    if (snap.numChildren() >= 10) {
+      alert("Server full (10/10). Try later.");
+      logout();
+      return;
+    }
 
-    const playerRef = db.ref("players/" + uid);
-    playerRef.set({ username, x: 200, y: 200 });
+    const playerRef = db.ref("players/" + currentUser);
+    playerRef.set({ username: currentUser, x: 200, y: 200 });
     playerRef.onDisconnect().remove();
 
     db.ref("players").on("value", snap => {
@@ -296,42 +307,37 @@
 
   function updatePlayerPosition(p) {
     p.element.style.left = p.x + "px";
-    p.element.style.top  = p.y + "px";
+    p.element.style.top = p.y + "px";
   }
 
   document.addEventListener("keydown", e => keys[e.key] = true);
-  document.addEventListener("keyup",   e => keys[e.key] = false);
+  document.addEventListener("keyup", e => keys[e.key] = false);
 
   function gameLoop() {
-    if (currentUser && players[currentUser.uid]) {
-      const me = players[currentUser.uid];
+    if (currentUser && players[currentUser]) {
+      const me = players[currentUser];
       let moved = false;
 
-      if (keys["a"] || keys["ArrowLeft"])  { me.x -= 3; moved = true; }
+      if (keys["a"] || keys["ArrowLeft"]) { me.x -= 3; moved = true; }
       if (keys["d"] || keys["ArrowRight"]) { me.x += 3; moved = true; }
       if (me.y < 400) { me.y += 3; moved = true; }
 
       updatePlayerPosition(me);
 
       if (moved) {
-        db.ref("players/" + currentUser.uid).update({ x: me.x, y: me.y });
+        db.ref("players/" + currentUser).update({ x: me.x, y: me.y });
       }
     }
     requestAnimationFrame(gameLoop);
   }
 
-  chatInput.addEventListener("keydown", async e => {
+  chatInput.addEventListener("keydown", e => {
     if (e.key === "Enter" && currentUser) {
       const text = chatInput.value.trim();
       if (!text) return;
 
-      const uid = currentUser.uid;
-      const usernameSnap = await db.ref("usernames/" + uid).once("value");
-      const username = usernameSnap.val().username;
-
       db.ref("chat").push({
-        uid,
-        username,
+        username: currentUser,
         text,
         ts: firebase.database.ServerValue.TIMESTAMP
       });
@@ -344,9 +350,4 @@
     const div = document.createElement("div");
     div.textContent = text;
     chatMessages.appendChild(div);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-</script>
-
-</body>
-</html>
+    chatMessages
