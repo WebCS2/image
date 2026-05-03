@@ -1,437 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Bytecoin System + Admin Panel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
+<title>Mini Growtopia Login</title>
+<style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f1020;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      padding: 0 10px;
+        background:#1e1e1e;
+        font-family:Arial;
+        color:white;
+        text-align:center;
     }
-
-    .box {
-      background: #1b1d36;
-      padding: 25px;
-      border-radius: 14px;
-      width: 320px;
-      max-width: 100%;
+    .frame {
+        width:300px;
+        margin:80px auto;
+        padding:20px;
+        background:#2b2b2b;
+        border-radius:10px;
+        display:none;
     }
-
-    .tabs {
-      display: flex;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .tab {
-      flex: 1;
-      padding: 10px;
-      text-align: center;
-      cursor: pointer;
-      background: #0f1020;
-      font-size: 15px;
-    }
-
-    .tab.active {
-      background: #3b3f7a;
-    }
-
     input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      font-size: 15px;
+        width:90%;
+        padding:10px;
+        margin:8px 0;
+        border:none;
+        border-radius:5px;
     }
-
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background: #3b3f7a;
-      color: white;
-      font-size: 15px;
+        width:95%;
+        padding:10px;
+        margin-top:10px;
+        background:#4caf50;
+        border:none;
+        border-radius:5px;
+        color:white;
+        font-size:16px;
+        cursor:pointer;
     }
-
-    #dashboard {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
-      background: #0f1020;
-    }
-
-    .topbar {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .logout {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      padding: 6px 12px;
-      background: #3b3f7a;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      width: auto;
-    }
-
-    .coinFrame {
-      position: absolute;
-      top: 70px;
-      left: 15px;
-      width: 160px;
-      background: #1b1d36;
-      padding: 10px;
-      border-radius: 10px;
-    }
-
-    .coinGame {
-      display: none;
-      position: absolute;
-      top: 70px;
-      left: 185px;
-      width: 160px;
-      background: #1b1d36;
-      padding: 10px;
-      border-radius: 10px;
-    }
-
-    /* ADMIN POPUP */
-    .adminPopup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 300px;
-      max-height: 70%;
-      transform: translate(-50%, -50%);
-      background: #1b1d36;
-      padding: 15px;
-      border-radius: 12px;
-      overflow-y: auto;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      z-index: 999;
-    }
-
-    .adminPopup h3 {
-      margin-top: 0;
-      text-align: center;
-    }
-
-    .closeAdmin {
-      background: #7a2f2f;
-      margin-top: 15px;
-    }
-
-    /* LEADERBOARD */
-    .leaderboard {
-      position: absolute;
-      top: 250px;
-      left: 15px;
-      width: 330px;
-      background: #1b1d36;
-      padding: 10px;
-      border-radius: 10px;
-    }
-
-    @media (max-width: 480px) {
-      .coinFrame { width: 130px; left: 10px; }
-      .coinGame { width: 130px; left: 150px; }
-      .leaderboard { width: 90%; left: 5%; }
-      .adminPopup { width: 90%; }
-    }
-  </style>
+    button:hover { background:#45a049; }
+</style>
 </head>
 <body>
 
-<!-- AUTH BOX -->
-<div class="box" id="auth">
-  <div class="tabs">
-    <div class="tab active" id="signupTab" onclick="setMode(true)">Sign up</div>
-    <div class="tab" id="loginTab" onclick="setMode(false)">Sign in</div>
-  </div>
+<h1>Mini Growtopia</h1>
 
-  <input type="text" id="usernameInput" placeholder="Username" maxlength="10">
-  <input type="password" id="passwordInput" placeholder="Password">
-
-  <button onclick="submitForm()" id="actionBtn">Sign up</button>
+<!-- MAIN MENU -->
+<div id="menu" class="frame" style="display:block;">
+    <button onclick="showFrame('signup')">Sign Up</button>
+    <button onclick="showFrame('login')">Log In</button>
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard">
-  <div class="topbar">
-    <span id="displayName"></span> — <span id="coinsDisplay"></span> BC
-  </div>
+<!-- SIGN UP FRAME -->
+<div id="signup" class="frame">
+    <h2>Create Account</h2>
+    <input id="su_name" placeholder="Username">
+    <input id="su_pass" type="password" placeholder="Password">
+    <button onclick="signUp()">Create</button>
+    <button onclick="showFrame('menu')">Back</button>
+</div>
 
-  <button class="logout" onclick="logout()">Log out</button>
+<!-- LOGIN FRAME -->
+<div id="login" class="frame">
+    <h2>Log In</h2>
+    <input id="li_name" placeholder="Username">
+    <input id="li_pass" type="password" placeholder="Password">
+    <button onclick="logIn()">Enter</button>
+    <button onclick="showFrame('menu')">Back</button>
+</div>
 
-  <!-- ADMIN BUTTON -->
-  <button id="adminBtn" style="position:absolute; top:50px; right:15px; width:auto; padding:6px 10px; display:none;" onclick="openAdmin()">
-    Admin Panel
-  </button>
-
-  <!-- COIN FLIP FRAME -->
-  <div class="coinFrame">
-    <h3>Coin Flip</h3>
-    <button onclick="toggleCoinFlip()">Play</button>
-  </div>
-
-  <!-- COIN GAME -->
-  <div class="coinGame" id="coinGame">
-    <h3>Coin Flip</h3>
-
-    <button onclick="setPick('heads')">Heads</button>
-    <button onclick="setPick('tails')">Tails</button>
-
-    <p id="pickText">Pick: none</p>
-
-    <input type="number" id="betAmount" placeholder="Bet amount">
-
-    <button onclick="playCoinFlip()">Flip</button>
-
-    <p id="resultText"></p>
-  </div>
-
-  <!-- LEADERBOARD -->
-  <div class="leaderboard" id="leaderboardBox">
-    <h3>Leaderboard</h3>
-    <p id="leaderboardList"></p>
-  </div>
-
-  <!-- ADMIN POPUP -->
-  <div class="adminPopup" id="adminPopup">
-    <h3>Admin Panel</h3>
-
-    <h4>Ban User (Permanent)</h4>
-    <input id="banUser" placeholder="Username">
-    <button onclick="banUserFunc()">Ban</button>
-
-    <h4>Timeout User</h4>
-    <input id="timeoutUser" placeholder="Username">
-    <input id="timeoutMinutes" type="number" placeholder="Minutes">
-    <button onclick="timeoutUserFunc()">Timeout</button>
-
-    <h4>Edit Bytecoins</h4>
-    <input id="editUser" placeholder="Username">
-    <input id="editAmount" type="number" placeholder="Amount (+/-)">
-    <button onclick="editCoins()">Apply</button>
-
-    <h4>Reset Password</h4>
-    <input id="resetUser" placeholder="Username">
-    <input id="newPass" placeholder="New Password">
-    <button onclick="resetPassword()">Reset</button>
-
-    <h4>View Users</h4>
-    <button onclick="viewUsers()">Show List</button>
-    <p id="userList"></p>
-
-    <button class="closeAdmin" onclick="closeAdmin()">Close</button>
-  </div>
-
+<!-- GAME FRAME -->
+<div id="game" class="frame">
+    <h2>Welcome, <span id="playerName"></span>!</h2>
+    <p>Game world loading...</p>
 </div>
 
 <script>
-  let isSignup = true;
-  let currentPick = null;
+    // Reserved creator names
+    const blockedNames = ["Emilis", "Krooks", "Admin", "Owner"];
 
-  function setMode(signup) {
-    isSignup = signup;
-    signupTab.classList.toggle("active", signup);
-    loginTab.classList.toggle("active", !signup);
-    actionBtn.innerText = signup ? "Sign up" : "Sign in";
-  }
+    // Load saved accounts
+    let accounts = JSON.parse(localStorage.getItem("accounts") || "{}");
 
-  function getUsers() {
-    return JSON.parse(localStorage.getItem("users") || "[]");
-  }
-
-  function saveUsers(users) {
-    localStorage.setItem("users", JSON.stringify(users));
-  }
-
-  function submitForm() {
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
-
-    if (!username || !password) return alert("Fill all fields");
-
-    let users = getUsers();
-
-    if (isSignup) {
-      if (users.some(u => u.username.toLowerCase() === username.toLowerCase()))
-        return alert("Username already taken");
-
-      users.push({ username, password, bytecoins: 10 });
-      saveUsers(users);
-      localStorage.setItem("currentUser", username);
-      showDashboard(username);
-      return;
+    function showFrame(id) {
+        document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
+        document.getElementById(id).style.display = "block";
     }
 
-    const user = users.find(u => u.username === username && u.password === password);
-    if (!user) return alert("Invalid login");
+    function signUp() {
+        let name = su_name.value.trim();
+        let pass = su_pass.value;
 
-    if (user.timeout && Date.now() < user.timeout)
-      return alert("You are timed out");
+        if (!name || !pass) return alert("Fill everything");
 
-    localStorage.setItem("currentUser", username);
-    showDashboard(username);
-  }
+        if (blockedNames.includes(name)) {
+            return alert("This name is reserved by creators. Choose another.");
+        }
 
-  function showDashboard(name) {
-    auth.style.display = "none";
-    dashboard.style.display = "block";
+        if (accounts[name]) {
+            return alert("Name already taken");
+        }
 
-    const users = getUsers();
-    const user = users.find(u => u.username === name);
+        accounts[name] = pass;
+        localStorage.setItem("accounts", JSON.stringify(accounts));
 
-    displayName.innerText = name;
-    coinsDisplay.innerText = user.bytecoins;
-
-    adminBtn.style.display = (name.toLowerCase() === "krooks") ? "block" : "none";
-
-    updateLeaderboard();
-  }
-
-  function logout() {
-    localStorage.removeItem("currentUser");
-    auth.style.display = "block";
-    dashboard.style.display = "none";
-  }
-
-  window.onload = () => {
-    const current = localStorage.getItem("currentUser");
-    if (current) showDashboard(current);
-  };
-
-  function toggleCoinFlip() {
-    coinGame.style.display = (coinGame.style.display === "block") ? "none" : "block";
-  }
-
-  function setPick(p) {
-    currentPick = p;
-    pickText.innerText = "Pick: " + p;
-  }
-
-  function playCoinFlip() {
-    const bet = parseInt(betAmount.value);
-    if (!currentPick) return alert("Pick heads or tails");
-    if (!bet || bet <= 0) return alert("Enter valid bet");
-
-    let users = getUsers();
-    let name = localStorage.getItem("currentUser");
-    let user = users.find(u => u.username === name);
-
-    if (bet > user.bytecoins) return alert("Not enough Bytecoins");
-
-    user.bytecoins -= bet;
-
-    const flip = Math.random() < 0.5 ? "heads" : "tails";
-
-    if (flip === currentPick) {
-      const winnings = Math.floor(bet * 1.8);
-      user.bytecoins += winnings;
-      resultText.innerText = `You WON! Earned ${winnings}`;
-    } else {
-      resultText.innerText = `You lost!`;
+        alert("Account created!");
+        showFrame("login");
     }
 
-    saveUsers(users);
-    coinsDisplay.innerText = user.bytecoins;
-    updateLeaderboard();
-  }
+    function logIn() {
+        let name = li_name.value.trim();
+        let pass = li_pass.value;
 
-  /* ADMIN PANEL */
-
-  function openAdmin() {
-    adminPopup.style.display = "block";
-  }
-
-  function closeAdmin() {
-    adminPopup.style.display = "none";
-  }
-
-  function banUserFunc() {
-    let name = banUser.value.trim();
-    let users = getUsers();
-    users = users.filter(u => u.username.toLowerCase() !== name.toLowerCase());
-    saveUsers(users);
-    alert("User permanently banned");
-    updateLeaderboard();
-  }
-
-  function timeoutUserFunc() {
-    let name = timeoutUser.value.trim();
-    let mins = parseInt(timeoutMinutes.value);
-    let users = getUsers();
-    let user = users.find(u => u.username.toLowerCase() === name.toLowerCase());
-    if (!user) return alert("User not found");
-    user.timeout = Date.now() + mins * 60000;
-    saveUsers(users);
-    alert("User timed out");
-  }
-
-  function editCoins() {
-    let name = editUser.value.trim();
-    let amount = parseInt(editAmount.value);
-    let users = getUsers();
-    let user = users.find(u => u.username.toLowerCase() === name.toLowerCase());
-    if (!user) return alert("User not found");
-    user.bytecoins += amount;
-    saveUsers(users);
-    alert("Updated coins");
-    updateLeaderboard();
-  }
-
-  function resetPassword() {
-    let name = resetUser.value.trim();
-    let pass = newPass.value;
-    let users = getUsers();
-    let user = users.find(u => u.username.toLowerCase() === name.toLowerCase());
-    if (!user) return alert("User not found");
-    user.password = pass;
-    saveUsers(users);
-    alert("Password reset");
-  }
-
-  function viewUsers() {
-    let users = getUsers();
-    userList.innerText = users.map(u => `${u.username} — ${u.bytecoins} BC`).join("\n");
-  }
-
-  /* LEADERBOARD */
-
-  function updateLeaderboard() {
-    let users = getUsers();
-    users.sort((a, b) => b.bytecoins - a.bytecoins);
-
-    leaderboardList.innerText = users
-      .map((u, i) => `${i + 1}. ${u.username} — ${u.bytecoins} BC`)
-      .join("\n");
-  }
+        if (accounts[name] && accounts[name] === pass) {
+            document.getElementById("playerName").innerText = name;
+            showFrame("game");
+        } else {
+            alert("Wrong username or password");
+        }
+    }
 </script>
 
 </body>
