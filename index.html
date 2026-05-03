@@ -63,9 +63,45 @@
 
     #dashboard {
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       display: none;
+      background: #0f1020;
+    }
+
+    .topbar {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: gray;
+    }
+
+    .logout {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      padding: 8px 12px;
+      background: #3b3f7a;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .upload {
+      font-size: 12px;
     }
   </style>
 </head>
@@ -80,11 +116,18 @@
   <input type="text" id="username" placeholder="Username">
   <input type="password" id="password" placeholder="Password">
 
+  <input type="file" id="avatar" class="upload" accept="image/*">
+
   <button onclick="submitForm()" id="actionBtn">Sign up</button>
 </div>
 
 <div id="dashboard">
-  <button onclick="logout()">Log out</button>
+  <div class="topbar">
+    <img id="avatarImg" class="avatar">
+    <span id="displayName"></span>
+  </div>
+
+  <button class="logout" onclick="logout()">Log out</button>
 </div>
 
 <script>
@@ -110,6 +153,7 @@
   function submitForm() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
+    const file = document.getElementById('avatar').files[0];
 
     if (!username || !password) {
       alert('Fill all fields');
@@ -120,17 +164,24 @@
 
     if (isSignup) {
       const exists = users.find(u => u.username.toLowerCase() === username.toLowerCase());
-
       if (exists) {
         alert('Username already taken');
         return;
       }
 
-      users.push({ username, password });
-      saveUsers(users);
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const avatar = e.target.result;
 
-      alert('Account created! Now sign in.');
-      setMode(false);
+        users.push({ username, password, avatar });
+        saveUsers(users);
+        localStorage.setItem('currentUser', JSON.stringify({ username, avatar }));
+
+        showDashboard(username, avatar);
+      };
+
+      if (file) reader.readAsDataURL(file);
+      else reader.onload({ target: { result: '' } });
 
     } else {
       const user = users.find(u => u.username === username && u.password === password);
@@ -140,18 +191,30 @@
         return;
       }
 
-      showDashboard(username);
+      localStorage.setItem('currentUser', JSON.stringify({ username: user.username, avatar: user.avatar }));
+      showDashboard(user.username, user.avatar);
     }
   }
 
-  function showDashboard(name) {
+  function showDashboard(name, avatar) {
     document.getElementById('auth').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
+
+    document.getElementById('displayName').innerText = name;
+    document.getElementById('avatarImg').src = avatar || 'https://via.placeholder.com/40';
   }
 
   function logout() {
+    localStorage.removeItem('currentUser');
     document.getElementById('auth').style.display = 'block';
     document.getElementById('dashboard').style.display = 'none';
+  }
+
+  window.onload = function() {
+    const current = JSON.parse(localStorage.getItem('currentUser'));
+    if (current) {
+      showDashboard(current.username, current.avatar);
+    }
   }
 </script>
 
