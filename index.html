@@ -14,9 +14,7 @@
       text-align: center;
     }
 
-    h1 {
-      margin-top: 30px;
-    }
+    h1 { margin-top: 30px; }
 
     .frame {
       width: 300px;
@@ -64,7 +62,7 @@
       border-radius: 5px;
     }
 
-    /* Centered, readable mobile chat */
+    /* CHAT */
     #chatBox {
       position: fixed;
       bottom: 20px;
@@ -81,14 +79,12 @@
     #chatMessages {
       width: 100%;
       height: 180px;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0,0,0,0.8);
       overflow-y: auto;
       padding: 10px;
       border-radius: 10px;
-      text-align: left;
       font-size: 16px;
-      color: #fff;
-      box-sizing: border-box;
+      color: white;
       backdrop-filter: blur(6px);
     }
 
@@ -99,7 +95,6 @@
       border: none;
       border-radius: 8px;
       font-size: 16px;
-      box-sizing: border-box;
     }
 
     #statusBar {
@@ -154,7 +149,6 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
 
 <script>
-  // Your Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyCx4dKsPQ5ph7g7P6E7ZAv7NarT0uQhZGQ",
     authDomain: "pixeliaworlds.firebaseapp.com",
@@ -181,35 +175,41 @@
   }
 
   function signUp() {
-    const email = document.getElementById("su_email").value.trim();
-    const pass  = document.getElementById("su_pass").value;
+    const email = su_email.value.trim();
+    const pass  = su_pass.value;
     if (!email || !pass) return alert("Fill everything");
+
     auth.createUserWithEmailAndPassword(email, pass)
       .then(() => alert("Account created! Now log in."))
       .catch(e => alert(e.message));
   }
 
   function logIn() {
-    const email = document.getElementById("li_email").value.trim();
-    const pass  = document.getElementById("li_pass").value;
+    const email = li_email.value.trim();
+    const pass  = li_pass.value;
+
     if (!email || !pass) return alert("Fill everything");
+
     auth.signInWithEmailAndPassword(email, pass)
-      .catch(e => alert(e.message));
+      .catch(e => alert("Login error: " + e.message));
   }
 
   auth.onAuthStateChanged(user => {
     if (user) {
       const playersRef = db.ref("players");
+
       playersRef.once("value").then(snap => {
         const count = snap.numChildren();
         if (count >= 10) {
-          alert("The server is full (10/10 players). Try again later.");
+          alert("Server full (10/10). Try later.");
           auth.signOut();
           return;
         }
+
         currentUser = user;
         startGame();
       });
+
     } else {
       currentUser = null;
       document.getElementById("title").style.display = "block";
@@ -232,8 +232,7 @@
 
     db.ref("players").on("value", snap => {
       const data = snap.val() || {};
-      const count = Object.keys(data).length;
-      playerCountSpan.textContent = count;
+      playerCountSpan.textContent = Object.keys(data).length;
 
       for (let id in players) {
         if (!data[id]) {
@@ -268,7 +267,7 @@
     const div = document.createElement("div");
     div.className = "player";
     div.innerHTML = `<span style="position:absolute;top:-18px;font-size:12px;">${name}</span>`;
-    document.getElementById("world").appendChild(div);
+    world.appendChild(div);
     return div;
   }
 
@@ -298,25 +297,25 @@
     requestAnimationFrame(gameLoop);
   }
 
-  document.getElementById("chatInput").addEventListener("keydown", e => {
+  chatInput.addEventListener("keydown", e => {
     if (e.key === "Enter" && currentUser) {
-      const input = document.getElementById("chatInput");
-      const text = input.value.trim();
+      const text = chatInput.value.trim();
       if (!text) return;
+
       const name = currentUser.email.split("@")[0];
-      const msgRef = db.ref("chat").push();
-      msgRef.set({
+      db.ref("chat").push({
         uid: currentUser.uid,
         name,
         text,
         ts: firebase.database.ServerValue.TIMESTAMP
       });
-      input.value = "";
+
+      chatInput.value = "";
     }
   });
 
   function addChatMessage(text) {
-    const box = document.getElementById("chatMessages");
+    const box = chatMessages;
     const div = document.createElement("div");
     div.textContent = text;
     box.appendChild(div);
