@@ -62,6 +62,7 @@
       border-radius: 5px;
     }
 
+    /* CHAT */
     #chatBox {
       position: fixed;
       bottom: 20px;
@@ -85,7 +86,6 @@
       font-size: 16px;
       color: white;
       backdrop-filter: blur(6px);
-      box-sizing: border-box;
     }
 
     #chatInput {
@@ -95,7 +95,6 @@
       border: none;
       border-radius: 8px;
       font-size: 16px;
-      box-sizing: border-box;
     }
 
     #statusBar {
@@ -107,6 +106,19 @@
       padding: 4px 10px;
       border-radius: 10px;
       font-size: 13px;
+      z-index: 9999;
+    }
+
+    /* LOGOUT BUTTON */
+    #logoutBtn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #d9534f;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
       z-index: 9999;
     }
   </style>
@@ -137,7 +149,9 @@
 </div>
 
 <div id="world">
+  <div id="logoutBtn" onclick="logout()">Logout</div>
   <div id="statusBar">Players online: <span id="playerCount">0</span>/10</div>
+
   <div id="chatBox">
     <div id="chatMessages"></div>
     <input id="chatInput" placeholder="Type message and press Enter">
@@ -181,53 +195,46 @@
     const email = su_email.value.trim();
     const pass  = su_pass.value;
 
-    if (!email || !pass) {
-      alert("Fill everything");
-      return;
-    }
+    if (!email || !pass) return alert("Fill everything");
 
     auth.createUserWithEmailAndPassword(email, pass)
-      .then(() => {
-        // User is automatically signed in → onAuthStateChanged will fire → startGame()
-        console.log("Signed up & auto-logged in");
-      })
-      .catch(e => {
-        alert("Signup error: " + e.message);
-      });
+      .then(() => console.log("Signed up & auto-logged in"))
+      .catch(e => alert("Signup error: " + e.message));
   }
 
   function logIn() {
     const email = li_email.value.trim();
     const pass  = li_pass.value;
 
-    if (!email || !pass) {
-      alert("Fill everything");
-      return;
-    }
+    if (!email || !pass) return alert("Fill everything");
 
     auth.signInWithEmailAndPassword(email, pass)
-      .catch(e => {
-        alert("Login error: " + e.message);
-      });
+      .catch(e => alert("Login error: " + e.message));
+  }
+
+  function logout() {
+    auth.signOut();
   }
 
   auth.onAuthStateChanged(user => {
     if (user) {
       const playersRef = db.ref("players");
+
       playersRef.once("value").then(snap => {
-        const count = snap.numChildren();
-        if (count >= 10) {
+        if (snap.numChildren() >= 10) {
           alert("Server full (10/10). Try later.");
           auth.signOut();
           return;
         }
+
         currentUser = user;
         startGame();
       });
+
     } else {
       currentUser = null;
-      document.getElementById("title").style.display = "block";
       worldEl.style.display = "none";
+      document.getElementById("title").style.display = "block";
       showFrame("menu");
     }
   });
