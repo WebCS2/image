@@ -182,6 +182,12 @@
   const chatMessages = document.getElementById("chatMessages");
   const playerCountSpan = document.getElementById("playerCount");
 
+  // Special users with colors
+  const specialUsers = {
+    "noob": "purple",
+    "Milk": "purple"
+  };
+
   function showFrame(id) {
     document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
     document.getElementById(id).style.display = "block";
@@ -202,7 +208,6 @@
 
     const accRef = db.ref("accounts/" + username);
     const snap = await accRef.once("value");
-
     if (snap.exists()) return alert("Username already taken");
 
     const hash = await hashPassword(pass);
@@ -224,7 +229,6 @@
 
     const accRef = db.ref("accounts/" + username);
     const snap = await accRef.once("value");
-
     if (!snap.exists()) return alert("User not found");
 
     const data = snap.val();
@@ -253,7 +257,6 @@
 
     const playersRef = db.ref("players");
     const snap = await playersRef.once("value");
-
     if (snap.numChildren() >= 10) {
       alert("Server full (10/10). Try later.");
       logout();
@@ -291,7 +294,9 @@
 
     db.ref("chat").limitToLast(50).on("child_added", snap => {
       const msg = snap.val();
-      addChatMessage(msg.username + ": " + msg.text);
+      const color = specialUsers[msg.username] || "white";
+      const displayName = specialUsers[msg.username] ? "@" + msg.username : msg.username;
+      addChatMessage(`<span style="color:${color}">${displayName}</span>: ${msg.text}`);
     });
 
     gameLoop();
@@ -300,7 +305,15 @@
   function createPlayerElement(username) {
     const div = document.createElement("div");
     div.className = "player";
-    div.innerHTML = `<span style="position:absolute;top:-18px;font-size:12px;">${username}</span>`;
+
+    const color = specialUsers[username] || "white";
+    const displayName = specialUsers[username] ? "@" + username : username;
+
+    div.innerHTML = `
+      <span style="position:absolute;top:-18px;font-size:12px;color:${color};">
+        ${displayName}
+      </span>
+    `;
     worldEl.appendChild(div);
     return div;
   }
@@ -346,9 +359,9 @@
     }
   });
 
-  function addChatMessage(text) {
+  function addChatMessage(html) {
     const div = document.createElement("div");
-    div.textContent = text;
+    div.innerHTML = html;
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
