@@ -20,52 +20,52 @@
 
     .box {
       background: #1b1d36;
-      padding: 30px;
+      padding: 25px;
       border-radius: 14px;
-      width: 340px;
+      width: 320px;
       max-width: 100%;
     }
 
     .tabs {
       display: flex;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       border-radius: 10px;
       overflow: hidden;
     }
 
     .tab {
       flex: 1;
-      padding: 12px;
+      padding: 10px;
       text-align: center;
       cursor: pointer;
       background: #0f1020;
-      font-size: 16px;
+      font-size: 15px;
     }
 
     .tab.active {
       background: #3b3f7a;
     }
 
-    input, select {
+    input {
       width: 100%;
-      padding: 14px;
-      margin: 12px 0;
+      padding: 12px;
+      margin: 10px 0;
       border-radius: 8px;
       border: none;
       outline: none;
-      font-size: 16px;
+      font-size: 15px;
     }
 
     button {
       width: 100%;
-      padding: 14px;
-      margin-top: 12px;
+      padding: 12px;
+      margin-top: 10px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       background: #3b3f7a;
       color: white;
-      font-size: 16px;
+      font-size: 15px;
     }
 
     #dashboard {
@@ -80,56 +80,76 @@
 
     .topbar {
       position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 22px;
+      top: 15px;
+      left: 15px;
+      font-size: 20px;
       font-weight: bold;
     }
 
     .logout {
       position: absolute;
-      top: 15px;
-      right: 15px;
+      top: 12px;
+      right: 12px;
       padding: 6px 12px;
       background: #3b3f7a;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       width: auto;
     }
 
-    .coinFrame, .adminPanel {
+    .coinFrame {
       position: absolute;
-      top: 80px;
-      left: 20px;
-      width: 200px;
+      top: 70px;
+      left: 15px;
+      width: 160px;
       background: #1b1d36;
-      padding: 15px;
+      padding: 10px;
       border-radius: 10px;
     }
 
     .coinGame {
       display: none;
       position: absolute;
-      top: 80px;
-      left: 240px;
-      width: 260px;
+      top: 70px;
+      left: 185px;
+      width: 160px;
       background: #1b1d36;
-      padding: 20px;
+      padding: 10px;
       border-radius: 10px;
     }
 
-    .adminPanel {
+    /* ADMIN POPUP */
+    .adminPopup {
       display: none;
-      top: 80px;
-      left: 520px;
-      width: 260px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 300px;
+      max-height: 70%;
+      transform: translate(-50%, -50%);
+      background: #1b1d36;
+      padding: 15px;
+      border-radius: 12px;
+      overflow-y: auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+
+    .adminPopup h3 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .closeAdmin {
+      background: #7a2f2f;
+      margin-top: 15px;
     }
 
     @media (max-width: 480px) {
-      .coinFrame { width: 150px; left: 10px; padding: 10px; }
-      .coinGame { width: 150px; left: 170px; padding: 10px; }
-      .adminPanel { width: 95%; left: 10px; top: 260px; }
+      .coinFrame { width: 130px; left: 10px; }
+      .coinGame { width: 130px; left: 150px; }
+      .adminPopup { width: 90%; }
     }
   </style>
 </head>
@@ -151,10 +171,15 @@
 <!-- DASHBOARD -->
 <div id="dashboard">
   <div class="topbar">
-    <span id="displayName"></span> — <span id="coinsDisplay"></span> Bytecoins
+    <span id="displayName"></span> — <span id="coinsDisplay"></span> BC
   </div>
 
   <button class="logout" onclick="logout()">Log out</button>
+
+  <!-- ADMIN BUTTON (Krooks only) -->
+  <button id="adminBtn" style="position:absolute; top:50px; right:15px; width:auto; padding:6px 10px; display:none;" onclick="openAdmin()">
+    Admin Panel
+  </button>
 
   <!-- COIN FLIP FRAME -->
   <div class="coinFrame">
@@ -178,13 +203,13 @@
     <p id="resultText"></p>
   </div>
 
-  <!-- ADMIN PANEL -->
-  <div class="adminPanel" id="adminPanel">
+  <!-- ADMIN POPUP -->
+  <div class="adminPopup" id="adminPopup">
     <h3>Admin Panel</h3>
 
     <h4>Ban User (Permanent)</h4>
     <input id="banUser" placeholder="Username">
-    <button onclick="banUser()">Ban</button>
+    <button onclick="banUserFunc()">Ban</button>
 
     <h4>Timeout User</h4>
     <input id="timeoutUser" placeholder="Username">
@@ -204,6 +229,8 @@
     <h4>View Users</h4>
     <button onclick="viewUsers()">Show List</button>
     <p id="userList"></p>
+
+    <button class="closeAdmin" onclick="closeAdmin()">Close</button>
   </div>
 
 </div>
@@ -214,17 +241,17 @@
 
   function setMode(signup) {
     isSignup = signup;
-    document.getElementById('signupTab').classList.toggle('active', signup);
-    document.getElementById('loginTab').classList.toggle('active', !signup);
-    document.getElementById('actionBtn').innerText = signup ? 'Sign up' : 'Sign in';
+    signupTab.classList.toggle("active", signup);
+    loginTab.classList.toggle("active", !signup);
+    actionBtn.innerText = signup ? "Sign up" : "Sign in";
   }
 
   function getUsers() {
-    return JSON.parse(localStorage.getItem('users') || '[]');
+    return JSON.parse(localStorage.getItem("users") || "[]");
   }
 
   function saveUsers(users) {
-    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem("users", JSON.stringify(users));
   }
 
   function submitForm() {
@@ -247,7 +274,6 @@
     }
 
     const user = users.find(u => u.username === username && u.password === password);
-
     if (!user) return alert("Invalid login");
 
     if (user.timeout && Date.now() < user.timeout)
@@ -267,7 +293,7 @@
     displayName.innerText = name;
     coinsDisplay.innerText = user.bytecoins;
 
-    adminPanel.style.display = (name.toLowerCase() === "krooks") ? "block" : "none";
+    adminBtn.style.display = (name.toLowerCase() === "krooks") ? "block" : "none";
   }
 
   function logout() {
@@ -317,10 +343,18 @@
     coinsDisplay.innerText = user.bytecoins;
   }
 
-  // ADMIN FUNCTIONS
+  /* ADMIN PANEL */
 
-  function banUser() {
-    let name = banUserInput.value.trim();
+  function openAdmin() {
+    adminPopup.style.display = "block";
+  }
+
+  function closeAdmin() {
+    adminPopup.style.display = "none";
+  }
+
+  function banUserFunc() {
+    let name = banUser.value.trim();
     let users = getUsers();
     users = users.filter(u => u.username.toLowerCase() !== name.toLowerCase());
     saveUsers(users);
