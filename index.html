@@ -176,7 +176,7 @@
 
   <button class="logout" onclick="logout()">Log out</button>
 
-  <!-- ADMIN BUTTON (Krooks only) -->
+  <!-- ADMIN BUTTON -->
   <button id="adminBtn" style="position:absolute; top:50px; right:15px; width:auto; padding:6px 10px; display:none;" onclick="openAdmin()">
     Admin Panel
   </button>
@@ -255,8 +255,8 @@
   }
 
   function submitForm() {
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
+    const username = username.value.trim();
+    const password = password.value;
 
     if (!username || !password) return alert("Fill all fields");
 
@@ -332,7 +332,7 @@
     const flip = Math.random() < 0.5 ? "heads" : "tails";
 
     if (flip === currentPick) {
-      const winnings = Math.floor(bet * 0.90);
+      const winnings = Math.floor(bet * 1.8);
       user.bytecoins += winnings;
       resultText.innerText = `You WON! Earned ${winnings}`;
     } else {
