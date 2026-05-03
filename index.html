@@ -100,7 +100,28 @@
       width: auto;
     }
 
-    /* 📱 MOBILE USERS GET BIGGER UI */
+    /* Coin Flip Frame */
+    .coinFrame {
+      position: absolute;
+      top: 80px;
+      left: 20px;
+      width: 200px;
+      background: #1b1d36;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .coinGame {
+      display: none;
+      position: absolute;
+      top: 80px;
+      left: 240px;
+      width: 260px;
+      background: #1b1d36;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
     @media (max-width: 480px) {
       .box {
         width: 95%;
@@ -150,14 +171,39 @@
 
 <div id="dashboard">
   <div class="topbar">
-    <span id="displayName"></span>
+    <span id="displayName"></span> — <span id="coinsDisplay"></span> Bytecoins
   </div>
 
   <button class="logout" onclick="logout()">Log out</button>
+
+  <!-- LEFT FRAME -->
+  <div class="coinFrame">
+    <h3>Coin Flip</h3>
+    <button onclick="openCoinFlip()">Play</button>
+  </div>
+
+  <!-- COIN FLIP GAME -->
+  <div class="coinGame" id="coinGame">
+    <h3>Coin Flip Game</h3>
+
+    <label>Pick:</label><br>
+    <button onclick="setPick('heads')">Heads</button>
+    <button onclick="setPick('tails')">Tails</button>
+
+    <p id="pickText">Pick: none</p>
+
+    <input type="number" id="betAmount" placeholder="Bet amount">
+
+    <button onclick="playCoinFlip()">Flip</button>
+
+    <p id="resultText"></p>
+  </div>
+
 </div>
 
 <script>
   let isSignup = true;
+  let currentPick = null;
 
   function setMode(signup) {
     isSignup = signup;
@@ -197,9 +243,9 @@
         return;
       }
 
-      users.push({ username, password });
+      users.push({ username, password, bytecoins: 10 });
       saveUsers(users);
-      localStorage.setItem('currentUser', JSON.stringify({ username }));
+      localStorage.setItem('currentUser', username);
       showDashboard(username);
 
     } else {
@@ -210,7 +256,7 @@
         return;
       }
 
-      localStorage.setItem('currentUser', JSON.stringify({ username: user.username }));
+      localStorage.setItem('currentUser', user.username);
       showDashboard(user.username);
     }
   }
@@ -218,7 +264,12 @@
   function showDashboard(name) {
     document.getElementById('auth').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
+
+    const users = getUsers();
+    const user = users.find(u => u.username === name);
+
     document.getElementById('displayName').innerText = name;
+    document.getElementById('coinsDisplay').innerText = user.bytecoins;
   }
 
   function logout() {
@@ -228,11 +279,68 @@
   }
 
   window.onload = function() {
-    const current = JSON.parse(localStorage.getItem('currentUser'));
-    if (current) {
-      showDashboard(current.username);
-    }
+    const current = localStorage.getItem('currentUser');
+    if (current) showDashboard(current);
+  };
+
+  /* ---------------- COIN FLIP ---------------- */
+
+  function openCoinFlip() {
+    document.getElementById('coinGame').style.display = 'block';
   }
+
+  function setPick(p) {
+    currentPick = p;
+    document.getElementById('pickText').innerText = "Pick: " + p;
+  }
+
+  function playCoinFlip() {
+    const bet = parseInt(document.getElementById('betAmount').value);
+    if (!currentPick) {
+      alert("Pick heads or tails");
+      return;
+    }
+    if (!bet || bet <= 0) {
+      alert("Enter a valid bet");
+      return;
+    }
+
+    let users = getUsers();
+    let current = localStorage.getItem('currentUser');
+    let user = users.find(u => u.username === current);
+
+    if (bet > user.bytecoins) {
+      alert("Not enough Bytecoins");
+      return;
+    }
+
+    // TAX CALCULATION
+    const tax = Math.floor(bet * 0.10);
+
+    // SEND TAX TO KROOKS IF EXISTS
+    let krooks = users.find(u => u.username.toLowerCase() === "krooks");
+    if (krooks) {
+      krooks.bytecoins += tax;
+    }
+
+    user.bytecoins -= bet; // remove bet
+
+    const flip = Math.random() < 0.5 ? "heads" : "tails";
+
+    if (flip === currentPick) {
+      const winnings = bet * 2 - tax;
+      user.bytecoins += winnings;
+      document.getElementById('resultText').innerText =
+        "You WON! Coin landed on " + flip + ". You earned " + winnings + " Bytecoins.";
+    } else {
+      document.getElementById('resultText').innerText =
+        "You lost! Coin landed on " + flip + ".";
+    }
+
+    saveUsers(users);
+    document.getElementById('coinsDisplay').innerText = user.bytecoins;
+  }
+
 </script>
 
 </body>
