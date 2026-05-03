@@ -1,93 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Login</title>
-<style>
-body {
-  font-family: Arial;
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-
-.box {
-  background: rgba(0,0,0,0.6);
-  padding: 30px;
-  border-radius: 15px;
-  text-align: center;
-}
-
-input {
-  display: block;
-  margin: 10px auto;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-}
-
-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  background: #00c6ff;
-  color: white;
-  cursor: pointer;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>Simple Auth</title>
+  <style>
+    body { font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .box { border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 300px; }
+    input { display: block; margin: 10px 0; width: 100%; padding: 8px; }
+    button { padding: 10px; width: 100%; margin-top: 10px; }
+    #dashboard { position: absolute; top: 20px; right: 20px; display: none; }
+  </style>
 </head>
 <body>
 
-<div class="box">
-  <h2>Login / Register</h2>
-  <input type="text" id="username" placeholder="Name">
+<div id="auth" class="box">
+  <h2 id="title">Login</h2>
+  <input type="text" id="name" placeholder="Name">
   <input type="password" id="password" placeholder="Password">
-  <button onclick="register()">Register</button>
-  <button onclick="login()">Login</button>
+  <input type="date" id="birth" style="display:none">
+  <button id="submitBtn" onclick="submitForm()">Log in</button>
+  <button id="switchBtn" onclick="toggleMode()">Sign Up</button>
+</div>
+
+<div id="dashboard">
+  <button onclick="logout()">Log out</button>
 </div>
 
 <script>
-function setCookie(name, value) {
-  document.cookie = name + "=" + value + "; path=/";
-}
+  let isSignup = false;
 
-function getCookie(name) {
-  let cookies = document.cookie.split("; ");
-  for (let c of cookies) {
-    let [key, val] = c.split("=");
-    if (key === name) return val;
-  }
-  return null;
-}
+  function toggleMode() {
+    isSignup = !isSignup;
+    document.getElementById('title').innerText = isSignup ? 'Sign Up' : 'Login';
 
-function register() {
-  let user = document.getElementById("username").value;
-  let pass = document.getElementById("password").value;
+    // name is always required for both login and signup
+    document.getElementById('name').style.display = 'block';
 
-  if (!user || !pass) {
-    alert("Fill all fields");
-    return;
+    // birth only for signup
+    document.getElementById('birth').style.display = isSignup ? 'block' : 'none';
+
+    document.getElementById('submitBtn').innerText = isSignup ? 'Sign Up' : 'Log in';
+    document.getElementById('switchBtn').innerText = isSignup ? 'Back to Login' : 'Sign Up';
   }
 
-  setCookie("user", user);
-  setCookie("pass", pass);
-  alert("Registered!");
-}
+  function submitForm() {
+    const name = document.getElementById('name').value;
+    const password = document.getElementById('password').value;
+    const birth = document.getElementById('birth').value;
 
-function login() {
-  let user = document.getElementById("username").value;
-  let pass = document.getElementById("password").value;
-
-  if (getCookie("user") === user && getCookie("pass") === pass) {
-    window.location.href = "/coinflip";
-  } else {
-    alert("Wrong login");
+    if (isSignup) {
+      if (!name || !password || !birth) {
+        alert('Fill all fields');
+        return;
+      }
+      localStorage.setItem('user', JSON.stringify({ name, password, birth }));
+      alert('Signed up! Now log in.');
+      toggleMode();
+    } else {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (!user || user.password !== password) {
+        alert('Invalid login');
+        return;
+      }
+      showDashboard();
+    }
   }
-}
+
+  function showDashboard() {
+    document.getElementById('auth').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+  }
+
+  function logout() {
+    document.getElementById('auth').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+  }
 </script>
 
 </body>
