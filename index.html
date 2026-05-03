@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Auth UI</title>
+  <title>Auth UI + Admin Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -10,11 +10,11 @@
       margin: 0;
       font-family: Arial, sans-serif;
       background: #0f1020;
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      color: white;
       padding: 0 10px;
     }
 
@@ -46,7 +46,7 @@
       background: #3b3f7a;
     }
 
-    input {
+    input, select {
       width: 100%;
       padding: 14px;
       margin: 12px 0;
@@ -92,21 +92,19 @@
       right: 15px;
       padding: 6px 12px;
       background: #3b3f7a;
-      border: none;
       border-radius: 6px;
-      color: white;
       cursor: pointer;
       font-size: 14px;
       width: auto;
     }
 
-    .coinFrame {
+    .coinFrame, .adminPanel {
       position: absolute;
       top: 80px;
       left: 20px;
-      width: 180px;
+      width: 200px;
       background: #1b1d36;
-      padding: 12px;
+      padding: 15px;
       border-radius: 10px;
     }
 
@@ -114,53 +112,30 @@
       display: none;
       position: absolute;
       top: 80px;
-      left: 210px;
-      width: 180px;
+      left: 240px;
+      width: 260px;
       background: #1b1d36;
-      padding: 12px;
+      padding: 20px;
       border-radius: 10px;
     }
 
-    .coinGame button {
-      width: 48%;
+    .adminPanel {
+      display: none;
+      top: 80px;
+      left: 520px;
+      width: 260px;
     }
 
     @media (max-width: 480px) {
-      .coinFrame {
-        width: 140px;
-        padding: 8px;
-        left: 10px;
-      }
-
-      .coinGame {
-        width: 140px;
-        padding: 8px;
-        left: 160px;
-      }
-
-      .coinFrame h3,
-      .coinGame h3 {
-        font-size: 14px;
-      }
-
-      .coinGame button {
-        padding: 6px;
-        font-size: 12px;
-      }
-
-      .coinGame input {
-        padding: 6px;
-        font-size: 12px;
-      }
-
-      .coinGame p {
-        font-size: 12px;
-      }
+      .coinFrame { width: 150px; left: 10px; padding: 10px; }
+      .coinGame { width: 150px; left: 170px; padding: 10px; }
+      .adminPanel { width: 95%; left: 10px; top: 260px; }
     }
   </style>
 </head>
 <body>
 
+<!-- AUTH BOX -->
 <div class="box" id="auth">
   <div class="tabs">
     <div class="tab active" id="signupTab" onclick="setMode(true)">Sign up</div>
@@ -173,6 +148,7 @@
   <button onclick="submitForm()" id="actionBtn">Sign up</button>
 </div>
 
+<!-- DASHBOARD -->
 <div id="dashboard">
   <div class="topbar">
     <span id="displayName"></span> — <span id="coinsDisplay"></span> Bytecoins
@@ -180,11 +156,13 @@
 
   <button class="logout" onclick="logout()">Log out</button>
 
+  <!-- COIN FLIP FRAME -->
   <div class="coinFrame">
     <h3>Coin Flip</h3>
     <button onclick="toggleCoinFlip()">Play</button>
   </div>
 
+  <!-- COIN GAME -->
   <div class="coinGame" id="coinGame">
     <h3>Coin Flip</h3>
 
@@ -195,9 +173,37 @@
 
     <input type="number" id="betAmount" placeholder="Bet amount">
 
-    <button style="width:100%; margin-top:8px;" onclick="playCoinFlip()">Flip</button>
+    <button onclick="playCoinFlip()">Flip</button>
 
     <p id="resultText"></p>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="adminPanel" id="adminPanel">
+    <h3>Admin Panel</h3>
+
+    <h4>Ban User (Permanent)</h4>
+    <input id="banUser" placeholder="Username">
+    <button onclick="banUser()">Ban</button>
+
+    <h4>Timeout User</h4>
+    <input id="timeoutUser" placeholder="Username">
+    <input id="timeoutMinutes" type="number" placeholder="Minutes">
+    <button onclick="timeoutUserFunc()">Timeout</button>
+
+    <h4>Edit Bytecoins</h4>
+    <input id="editUser" placeholder="Username">
+    <input id="editAmount" type="number" placeholder="Amount (+/-)">
+    <button onclick="editCoins()">Apply</button>
+
+    <h4>Reset Password</h4>
+    <input id="resetUser" placeholder="Username">
+    <input id="newPass" placeholder="New Password">
+    <button onclick="resetPassword()">Reset</button>
+
+    <h4>View Users</h4>
+    <button onclick="viewUsers()">Show List</button>
+    <p id="userList"></p>
   </div>
 
 </div>
@@ -222,108 +228,78 @@
   }
 
   function submitForm() {
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
 
-    if (!username || !password) {
-      alert('Fill all fields');
-      return;
-    }
-
-    if (username.length > 10) {
-      alert("Username must be 10 characters or less");
-      return;
-    }
+    if (!username || !password) return alert("Fill all fields");
 
     let users = getUsers();
 
     if (isSignup) {
-      const exists = users.some(
-        u => u.username.toLowerCase() === username.toLowerCase()
-      );
+      if (users.some(u => u.username.toLowerCase() === username.toLowerCase()))
+        return alert("Username already taken");
 
-      if (exists) {
-        alert("Username already taken");
-        return;
-      }
-
-      users.push({
-        username,
-        password,
-        bytecoins: 10
-      });
-
+      users.push({ username, password, bytecoins: 10 });
       saveUsers(users);
       localStorage.setItem("currentUser", username);
       showDashboard(username);
       return;
     }
 
-    const user = users.find(
-      u => u.username === username && u.password === password
-    );
+    const user = users.find(u => u.username === username && u.password === password);
 
-    if (!user) {
-      alert("Invalid login");
-      return;
-    }
+    if (!user) return alert("Invalid login");
 
-    localStorage.setItem("currentUser", user.username);
-    showDashboard(user.username);
+    if (user.timeout && Date.now() < user.timeout)
+      return alert("You are timed out");
+
+    localStorage.setItem("currentUser", username);
+    showDashboard(username);
   }
 
   function showDashboard(name) {
-    document.getElementById('auth').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
+    auth.style.display = "none";
+    dashboard.style.display = "block";
 
     const users = getUsers();
     const user = users.find(u => u.username === name);
 
-    document.getElementById('displayName').innerText = name;
-    document.getElementById('coinsDisplay').innerText = user.bytecoins;
+    displayName.innerText = name;
+    coinsDisplay.innerText = user.bytecoins;
+
+    adminPanel.style.display = (name.toLowerCase() === "krooks") ? "block" : "none";
   }
 
   function logout() {
-    localStorage.removeItem('currentUser');
-    document.getElementById('auth').style.display = 'block';
-    document.getElementById('dashboard').style.display = 'none';
+    localStorage.removeItem("currentUser");
+    auth.style.display = "block";
+    dashboard.style.display = "none";
   }
 
-  window.onload = function() {
-    const current = localStorage.getItem('currentUser');
+  window.onload = () => {
+    const current = localStorage.getItem("currentUser");
     if (current) showDashboard(current);
   };
 
   function toggleCoinFlip() {
-    const game = document.getElementById('coinGame');
-    game.style.display = (game.style.display === "block") ? "none" : "block";
+    coinGame.style.display = (coinGame.style.display === "block") ? "none" : "block";
   }
 
   function setPick(p) {
     currentPick = p;
-    document.getElementById('pickText').innerText = "Pick: " + p;
+    pickText.innerText = "Pick: " + p;
   }
 
   function playCoinFlip() {
-    const bet = parseInt(document.getElementById('betAmount').value);
-
-    if (!currentPick) {
-      alert("Pick heads or tails");
-      return;
-    }
-    if (!bet || bet <= 0) {
-      alert("Enter a valid bet");
-      return;
-    }
+    const bet = parseInt(betAmount.value);
+    if (!currentPick) return alert("Pick heads or tails");
+    if (!bet || bet <= 0) return alert("Enter valid bet");
 
     let users = getUsers();
-    let currentName = localStorage.getItem('currentUser');
-    let user = users.find(u => u.username === currentName);
+    let name = localStorage.getItem("currentUser");
+    let user = users.find(u => u.username === name);
 
-    if (bet > user.bytecoins) {
-      alert("Not enough Bytecoins");
-      return;
-    }
+    if (bet > user.bytecoins) return alert("Not enough Bytecoins");
 
     user.bytecoins -= bet;
 
@@ -332,16 +308,61 @@
     if (flip === currentPick) {
       const winnings = Math.floor(bet * 0.90);
       user.bytecoins += winnings;
-
-      document.getElementById('resultText').innerText =
-        `You WON! Coin landed on ${flip}. You earned ${winnings} Bytecoins (90% win).`;
+      resultText.innerText = `You WON! Earned ${winnings}`;
     } else {
-      document.getElementById('resultText').innerText =
-        `You lost! Coin landed on ${flip}.`;
+      resultText.innerText = `You lost!`;
     }
 
     saveUsers(users);
-    document.getElementById('coinsDisplay').innerText = user.bytecoins;
+    coinsDisplay.innerText = user.bytecoins;
+  }
+
+  // ADMIN FUNCTIONS
+
+  function banUser() {
+    let name = banUserInput.value.trim();
+    let users = getUsers();
+    users = users.filter(u => u.username.toLowerCase() !== name.toLowerCase());
+    saveUsers(users);
+    alert("User permanently banned");
+  }
+
+  function timeoutUserFunc() {
+    let name = timeoutUser.value.trim();
+    let mins = parseInt(timeoutMinutes.value);
+    let users = getUsers();
+    let user = users.find(u => u.username.toLowerCase() === name.toLowerCase());
+    if (!user) return alert("User not found");
+    user.timeout = Date.now() + mins * 60000;
+    saveUsers(users);
+    alert("User timed out");
+  }
+
+  function editCoins() {
+    let name = editUser.value.trim();
+    let amount = parseInt(editAmount.value);
+    let users = getUsers();
+    let user = users.find(u => u.username.toLowerCase() === name.toLowerCase());
+    if (!user) return alert("User not found");
+    user.bytecoins += amount;
+    saveUsers(users);
+    alert("Updated coins");
+  }
+
+  function resetPassword() {
+    let name = resetUser.value.trim();
+    let pass = newPass.value;
+    let users = getUsers();
+    let user = users.find(u => u.username.toLowerCase() === name.toLowerCase());
+    if (!user) return alert("User not found");
+    user.password = pass;
+    saveUsers(users);
+    alert("Password reset");
+  }
+
+  function viewUsers() {
+    let users = getUsers();
+    userList.innerText = users.map(u => `${u.username} — ${u.bytecoins} BC`).join("\n");
   }
 </script>
 
