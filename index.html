@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Pixelia Worlds</title>
+<title>2D Game – PC + Mobile</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
   margin: 0;
   overflow: hidden;
-  background: linear-gradient(#87CEEB, #cfefff);
+  background: #87CEEB;
   font-family: Arial, sans-serif;
 }
 
@@ -16,7 +16,7 @@ canvas {
   display: block;
 }
 
-/* NAME */
+/* NAME SCREEN */
 #nameBox {
   position: absolute;
   top: 40%;
@@ -35,12 +35,13 @@ canvas {
   border-radius: 10px;
   padding: 10px;
   color: white;
-  font-size: 14px;
+  display: none;
 }
 
 #chatLog {
   height: 140px;
   overflow-y: auto;
+  font-size: 14px;
 }
 
 #chatInput {
@@ -100,25 +101,6 @@ canvas {
   touch-action: none;
   user-select: none;
 }
-
-/* Small screens: shrink controls a bit */
-@media (max-width: 600px) {
-  #joystick {
-    width: 90px;
-    height: 90px;
-  }
-  #stick {
-    width: 40px;
-    height: 40px;
-    top: 25px;
-    left: 25px;
-  }
-  #jumpBtn {
-    width: 70px;
-    height: 70px;
-    font-size: 16px;
-  }
-}
 </style>
 </head>
 <body>
@@ -129,7 +111,7 @@ canvas {
   <button onclick="startGame()">Start</button>
 </div>
 
-<div id="chatContainer" style="display:none;">
+<div id="chatContainer">
   <div id="chatLog"></div>
   <input id="chatInput" placeholder="Enter = chat / commands">
 </div>
@@ -142,6 +124,9 @@ canvas {
 <canvas id="game"></canvas>
 
 <script>
+/* ============================================================
+   CANVAS + RESIZE
+============================================================ */
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
@@ -150,56 +135,77 @@ function resizeCanvas() {
   canvas.height = window.innerHeight;
 }
 resizeCanvas();
+
 window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", () => {
+  setTimeout(resizeCanvas, 300);
+});
 
+/* ============================================================
+   MOBILE DETECTION
+============================================================ */
+const isMobile = /Android|iPhone|iPad|iPod|Tablet/i.test(navigator.userAgent);
+
+if (!isMobile) {
+  document.getElementById("controls").style.display = "none";
+}
+
+/* ============================================================
+   WORLD SETTINGS
+============================================================ */
 const tileSize = 32;
-const cols = 50;
-const rows = 30;
+const worldWidth = 200;
+const worldHeight = 60;
 
+let world = [];
+
+/* ============================================================
+   PLAYER
+============================================================ */
 let keys = {};
-let playerName = "";
 let chatOpen = false;
+let playerName = "";
 let isAdmin = false;
 
-// MOBILE INPUT
-let moveDir = 0;
-let jumpPressed = false;
-
-// PARTICLES
-let particles = [];
-
 let player = {
-  x: 5,
-  y: 0,
+  x: 10,
+  y: 10,
   vx: 0,
   vy: 0,
   onGround: false,
   visible: true
 };
 
-let world = [];
+/* CAMERA */
+let camX = 0;
+let camY = 0;
 
-// WORLD
+/* PARTICLES */
+let particles = [];
+
+/* ============================================================
+   WORLD GENERATION
+============================================================ */
 function generateWorld() {
-  for (let y = 0; y < rows; y++) {
+  for (let y = 0; y < worldHeight; y++) {
     world[y] = [];
-    for (let x = 0; x < cols; x++) {
-      if (y === 15) world[y][x] = "grass";
-      else if (y > 15 && y < 22) world[y][x] = "soil";
-      else if (y >= 22) world[y][x] = "bedrock";
+    for (let x = 0; x < worldWidth; x++) {
+      if (y === 20) world[y][x] = "grass";
+      else if (y > 20 && y < 30) world[y][x] = "soil";
+      else if (y >= 30) world[y][x] = "bedrock";
       else world[y][x] = "air";
     }
   }
 }
 
-// START
+/* ============================================================
+   START GAME
+============================================================ */
 function startGame() {
   playerName = document.getElementById("nameInput").value.trim();
   if (!playerName) return;
 
-  if (playerName === "Xolo") {
-    isAdmin = true;
-  }
+  if (playerName === "Xolo") isAdmin = true;
 
   document.getElementById("nameBox").style.display = "none";
   document.getElementById("chatContainer").style.display = "block";
@@ -210,43 +216,44 @@ function startGame() {
   gameLoop();
 }
 
-// PC CONTROLS
+/* ============================================================
+   CHAT
+============================================================ */
+const chatInput = document.getElementById("chatInput");
+const chatLog = document.getElementById("chatLog");
+
 document.addEventListener("keydown", e => {
   if (e.key === "Enter" && !chatOpen) {
     chatOpen = true;
     chatInput.focus();
     return;
   }
-  if (!chatOpen) {
-    keys[e.key.toLowerCase()] = true;
-  }
+  if (!chatOpen) keys[e.key.toLowerCase()] = true;
 });
 
 document.addEventListener("keyup", e => {
-  if (!chatOpen) {
-    keys[e.key.toLowerCase()] = false;
-  }
+  if (!chatOpen) keys[e.key.toLowerCase()] = false;
 });
 
-// CHAT
-const chatInput = document.getElementById("chatInput");
-const chatLog = document.getElementById("chatLog");
-
 chatInput.addEventListener("keydown", e => {
-  e.stopPropagation(); // prevent game from seeing keys while chatting
+  e.stopPropagation();
 
   if (e.key === "Enter") {
     const msg = chatInput.value.trim();
+
     if (msg) {
-      // Admin commands
       if (isAdmin && msg.startsWith("/")) {
         handleAdminCommand(msg);
       } else {
-        const displayName = isAdmin ? '<span style="color:purple">@Xolo</span>' : `<span>${playerName}</span>`;
-        chatLog.innerHTML += `<div><b>${displayName}:</b> ${escapeHtml(msg)}</div>`;
-        chatLog.scrollTop = chatLog.scrollHeight;
+        const nameTag = isAdmin
+          ? '<span style="color:purple">@Xolo</span>'
+          : `<span>${playerName}</span>`;
+
+        chatLog.innerHTML += `<div><b>${nameTag}:</b> ${escapeHtml(msg)}</div>`;
       }
+      chatLog.scrollTop = chatLog.scrollHeight;
     }
+
     chatInput.value = "";
     chatOpen = false;
     keys = {};
@@ -254,148 +261,130 @@ chatInput.addEventListener("keydown", e => {
   }
 });
 
-function handleAdminCommand(cmd) {
-  const parts = cmd.split(" ");
-  const base = parts[0].toLowerCase();
-
-  if (base === "/respawn") {
-    respawnPlayer();
-    chatLog.innerHTML += `<div style="color:#9cf;"><b>@Xolo:</b> respawned</div>`;
-  } else if (base === "/invisible") {
-    player.visible = !player.visible;
-    chatLog.innerHTML += `<div style="color:#9cf;"><b>@Xolo:</b> invisible = ${player.visible}</div>`;
-  } else {
-    chatLog.innerHTML += `<div style="color:#f99;"><b>@Xolo:</b> unknown command</div>`;
-  }
-  chatLog.scrollTop = chatLog.scrollHeight;
-}
-
 function escapeHtml(str) {
   return str.replace(/[&<>"']/g, c => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[c]));
 }
 
-// MOBILE JOYSTICK
-const joystick = document.getElementById("joystick");
-const stick = document.getElementById("stick");
+/* ============================================================
+   ADMIN COMMANDS
+============================================================ */
+function handleAdminCommand(cmd) {
+  if (cmd === "/respawn") {
+    respawnPlayer();
+    chatLog.innerHTML += `<div style="color:#9cf;"><b>@Xolo:</b> respawned</div>`;
+  }
 
-let joyCenter = { x: 55, y: 55 }; // approx center
-let joyActive = false;
+  if (cmd === "/invisible") {
+    player.visible = !player.visible;
 
-function updateStickVisual(dx) {
-  const maxOffset = 25;
-  const clamped = Math.max(-maxOffset, Math.min(maxOffset, dx));
-  stick.style.transform = `translate(${clamped}px, 0px)`;
+    if (player.visible) {
+      flashEffect();
+      chatLog.innerHTML += `<div style="color:#9cf;"><b>@Xolo:</b> visible</div>`;
+    } else {
+      invisibleEffect();
+      chatLog.innerHTML += `<div style="color:#9cf;"><b>@Xolo:</b> invisible</div>`;
+    }
+  }
+
+  chatLog.scrollTop = chatLog.scrollHeight;
 }
 
-joystick.addEventListener("touchstart", e => {
-  joyActive = true;
-});
-
-joystick.addEventListener("touchmove", e => {
-  e.preventDefault();
-  let rect = joystick.getBoundingClientRect();
-  let touch = e.touches[0];
-
-  let x = touch.clientX - rect.left - joyCenter.x;
-
-  if (x < -15) moveDir = -1;
-  else if (x > 15) moveDir = 1;
-  else moveDir = 0;
-
-  updateStickVisual(x);
-}, { passive: false });
-
-joystick.addEventListener("touchend", () => {
-  joyActive = false;
-  moveDir = 0;
-  stick.style.transform = "translate(0px,0px)";
-});
-
-// JUMP BUTTON (touch + click for PC)
-const jumpBtn = document.getElementById("jumpBtn");
-
-jumpBtn.addEventListener("touchstart", e => {
-  e.preventDefault();
-  jumpPressed = true;
-}, { passive: false });
-
-jumpBtn.addEventListener("touchend", e => {
-  e.preventDefault();
-  jumpPressed = false;
-}, { passive: false });
-
-jumpBtn.addEventListener("mousedown", () => {
-  jumpPressed = true;
-});
-jumpBtn.addEventListener("mouseup", () => {
-  jumpPressed = false;
-});
-jumpBtn.addEventListener("mouseleave", () => {
-  jumpPressed = false;
-});
-
-// RESPAWN
-function respawnPlayer() {
-  player.x = 5;
-  player.y = 14;
-  player.vx = 0;
-  player.vy = 0;
-  player.onGround = false;
-}
-
-// PARTICLES
-function spawnDust(x, y, count = 6) {
-  for (let i = 0; i < count; i++) {
+/* ============================================================
+   EFFECTS
+============================================================ */
+function invisibleEffect() {
+  for (let i = 0; i < 40; i++) {
     particles.push({
-      x: x + tileSize / 2,
-      y: y + tileSize,
-      vx: (Math.random() - 0.5) * 2,
-      vy: -Math.random() * 2,
-      life: 20 + Math.random() * 10
+      x: player.x * tileSize + tileSize / 2,
+      y: player.y * tileSize + tileSize / 2,
+      vx: (Math.random() - 0.5) * 4,
+      vy: (Math.random() - 0.5) * 4,
+      life: 20,
+      color: "rgba(200,0,255,0.7)"
     });
   }
 }
 
-function updateParticles() {
-  for (let i = particles.length - 1; i >= 0; i--) {
-    let p = particles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    p.vy += 0.1;
-    p.life--;
-    if (p.life <= 0) particles.splice(i, 1);
+function flashEffect() {
+  for (let i = 0; i < 40; i++) {
+    particles.push({
+      x: player.x * tileSize + tileSize / 2,
+      y: player.y * tileSize + tileSize / 2,
+      vx: (Math.random() - 0.5) * 4,
+      vy: (Math.random() - 0.5) * 4,
+      life: 20,
+      color: "rgba(255,255,0,0.9)"
+    });
   }
 }
 
-function drawParticles() {
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
-  particles.forEach(p => {
-    ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+/* ============================================================
+   RESPAWN
+============================================================ */
+function respawnPlayer() {
+  player.x = 10;
+  player.y = 10;
+  player.vx = 0;
+  player.vy = 0;
+}
+
+/* ============================================================
+   MOBILE JOYSTICK
+============================================================ */
+let moveDir = 0;
+let jumpPressed = false;
+
+const joystick = document.getElementById("joystick");
+const stick = document.getElementById("stick");
+
+if (isMobile) {
+  joystick.addEventListener("touchmove", e => {
+    e.preventDefault();
+    let rect = joystick.getBoundingClientRect();
+    let touch = e.touches[0];
+    let dx = touch.clientX - (rect.left + rect.width / 2);
+
+    if (dx < -15) moveDir = -1;
+    else if (dx > 15) moveDir = 1;
+    else moveDir = 0;
+
+    stick.style.transform = `translate(${dx / 3}px, 0px)`;
+  });
+
+  joystick.addEventListener("touchend", () => {
+    moveDir = 0;
+    stick.style.transform = "translate(0px,0px)";
   });
 }
 
-// UPDATE
+/* JUMP BUTTON */
+const jumpBtn = document.getElementById("jumpBtn");
+
+jumpBtn.addEventListener("touchstart", () => jumpPressed = true);
+jumpBtn.addEventListener("touchend", () => jumpPressed = false);
+
+jumpBtn.addEventListener("mousedown", () => jumpPressed = true);
+jumpBtn.addEventListener("mouseup", () => jumpPressed = false);
+
+/* ============================================================
+   UPDATE LOOP
+============================================================ */
 function update() {
   const speed = 0.5;
 
   let left = keys["a"] || moveDir === -1;
   let right = keys["d"] || moveDir === 1;
-  let jump = keys["w"] || jumpPressed || keys[" "];
-
-  if (keys["r"]) {
-    respawnPlayer();
-  }
+  let jump = keys["w"] || keys[" "] || jumpPressed;
 
   if (left) player.vx = -speed;
   else if (right) player.vx = speed;
   else player.vx = 0;
 
   if (jump && player.onGround) {
-    player.vy = -6;
+    player.vy = -7;
     player.onGround = false;
-    spawnDust(player.x * tileSize, player.y * tileSize);
   }
 
   player.vy += 0.3;
@@ -403,21 +392,12 @@ function update() {
   player.x += player.vx;
   player.y += player.vy * 0.1;
 
-  // BORDERS
-  player.x = Math.max(0, Math.min(cols - 1, player.x));
+  if (player.y > worldHeight + 5) respawnPlayer();
 
-  // FALL OFF WORLD -> respawn
-  if (player.y > rows + 5) {
-    respawnPlayer();
-  }
-
-  let below = Math.floor(player.y + 1);
   let px = Math.floor(player.x);
+  let py = Math.floor(player.y + 1);
 
-  if (world[below] && world[below][px] !== "air") {
-    if (!player.onGround && player.vy > 0.2) {
-      spawnDust(player.x * tileSize, (below - 1) * tileSize);
-    }
+  if (world[py] && world[py][px] !== "air") {
     player.y = Math.floor(player.y);
     player.vy = 0;
     player.onGround = true;
@@ -426,20 +406,53 @@ function update() {
   }
 
   updateParticles();
+
+  camX = player.x * tileSize - canvas.width / 2;
+  camY = player.y * tileSize - canvas.height / 2;
+
+  camX = Math.max(0, Math.min(camX, worldWidth * tileSize - canvas.width));
+  camY = Math.max(0, Math.min(camY, worldHeight * tileSize - canvas.height));
 }
 
-// DRAW
+/* ============================================================
+   PARTICLES
+============================================================ */
+function updateParticles() {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    let p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life--;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+}
+
+function drawParticles() {
+  particles.forEach(p => {
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x - camX, p.y - camY, 4, 4);
+  });
+}
+
+/* ============================================================
+   DRAW WORLD + PLAYER
+============================================================ */
 function drawWorld() {
-  for (let y = 0; y < rows; y++) {
-    for (let x = 0; x < cols; x++) {
+  for (let y = 0; y < worldHeight; y++) {
+    for (let x = 0; x < worldWidth; x++) {
       let block = world[y][x];
+      if (block === "air") continue;
 
       if (block === "grass") ctx.fillStyle = "#3cb043";
-      else if (block === "soil") ctx.fillStyle = "#8b4513";
-      else if (block === "bedrock") ctx.fillStyle = "#222";
-      else continue;
+      if (block === "soil") ctx.fillStyle = "#8b4513";
+      if (block === "bedrock") ctx.fillStyle = "#222";
 
-      ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+      ctx.fillRect(
+        x * tileSize - camX,
+        y * tileSize - camY,
+        tileSize,
+        tileSize
+      );
     }
   }
 }
@@ -447,22 +460,20 @@ function drawWorld() {
 function drawPlayer() {
   if (!player.visible) return;
 
-  let px = player.x * tileSize;
-  let py = player.y * tileSize;
+  let px = player.x * tileSize - camX;
+  let py = player.y * tileSize - camY;
 
-  // body
   ctx.fillStyle = "red";
   ctx.fillRect(px, py, tileSize, tileSize);
 
-  // eyes
   ctx.fillStyle = "white";
   ctx.fillRect(px + 6, py + 8, 6, 6);
   ctx.fillRect(px + 20, py + 8, 6, 6);
 
-  // name
   ctx.font = "14px Arial";
-  ctx.textBaseline = "bottom";
   ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+
   if (isAdmin) {
     ctx.fillStyle = "purple";
     ctx.fillText("@Xolo", px + tileSize / 2, py - 4);
@@ -472,7 +483,9 @@ function drawPlayer() {
   }
 }
 
-// LOOP
+/* ============================================================
+   GAME LOOP
+============================================================ */
 function gameLoop() {
   update();
 
