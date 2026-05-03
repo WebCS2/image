@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Auth UI + Admin Panel</title>
+  <title>Bytecoin System + Admin Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -146,9 +146,21 @@
       margin-top: 15px;
     }
 
+    /* LEADERBOARD */
+    .leaderboard {
+      position: absolute;
+      top: 250px;
+      left: 15px;
+      width: 330px;
+      background: #1b1d36;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
     @media (max-width: 480px) {
       .coinFrame { width: 130px; left: 10px; }
       .coinGame { width: 130px; left: 150px; }
+      .leaderboard { width: 90%; left: 5%; }
       .adminPopup { width: 90%; }
     }
   </style>
@@ -162,8 +174,8 @@
     <div class="tab" id="loginTab" onclick="setMode(false)">Sign in</div>
   </div>
 
-  <input type="text" id="username" placeholder="Username" maxlength="10">
-  <input type="password" id="password" placeholder="Password">
+  <input type="text" id="usernameInput" placeholder="Username" maxlength="10">
+  <input type="password" id="passwordInput" placeholder="Password">
 
   <button onclick="submitForm()" id="actionBtn">Sign up</button>
 </div>
@@ -201,6 +213,12 @@
     <button onclick="playCoinFlip()">Flip</button>
 
     <p id="resultText"></p>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="leaderboard" id="leaderboardBox">
+    <h3>Leaderboard</h3>
+    <p id="leaderboardList"></p>
   </div>
 
   <!-- ADMIN POPUP -->
@@ -255,8 +273,8 @@
   }
 
   function submitForm() {
-    const username = username.value.trim();
-    const password = password.value;
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
 
     if (!username || !password) return alert("Fill all fields");
 
@@ -294,6 +312,8 @@
     coinsDisplay.innerText = user.bytecoins;
 
     adminBtn.style.display = (name.toLowerCase() === "krooks") ? "block" : "none";
+
+    updateLeaderboard();
   }
 
   function logout() {
@@ -341,6 +361,7 @@
 
     saveUsers(users);
     coinsDisplay.innerText = user.bytecoins;
+    updateLeaderboard();
   }
 
   /* ADMIN PANEL */
@@ -359,6 +380,7 @@
     users = users.filter(u => u.username.toLowerCase() !== name.toLowerCase());
     saveUsers(users);
     alert("User permanently banned");
+    updateLeaderboard();
   }
 
   function timeoutUserFunc() {
@@ -381,6 +403,7 @@
     user.bytecoins += amount;
     saveUsers(users);
     alert("Updated coins");
+    updateLeaderboard();
   }
 
   function resetPassword() {
@@ -397,6 +420,17 @@
   function viewUsers() {
     let users = getUsers();
     userList.innerText = users.map(u => `${u.username} — ${u.bytecoins} BC`).join("\n");
+  }
+
+  /* LEADERBOARD */
+
+  function updateLeaderboard() {
+    let users = getUsers();
+    users.sort((a, b) => b.bytecoins - a.bytecoins);
+
+    leaderboardList.innerText = users
+      .map((u, i) => `${i + 1}. ${u.username} — ${u.bytecoins} BC`)
+      .join("\n");
   }
 </script>
 
