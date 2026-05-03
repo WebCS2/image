@@ -1,25 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Simple Auth</title>
-  <style>
-    body { font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; }
-    .box { border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 300px; }
-    input { display: block; margin: 10px 0; width: 100%; padding: 8px; }
-    button { padding: 10px; width: 100%; margin-top: 10px; }
-    #dashboard { position: absolute; top: 20px; right: 20px; display: none; }
-  </style>
-</head>
-<body>
 
-<div id="auth" class="box">
-  <h2 id="title">Login</h2>
-  <input type="text" id="name" placeholder="Name">
+
+
+Prašyti pasiūlymo
+make me a website where it will show first frame to Login or Sign up if sign up it will say Name Password Birth date and sign up it will save and u can log in and after u sign up it will delete the frame and it will create new frame where top right will show Log out if u logout it will logout
+
+I’ve created a simple working website for you in the canvas.
+
+Here’s what it does:
+
+Lets you switch between Login and Sign Up
+
+Sign Up asks for Name, Password, Birth date
+
+Saves user data in localStorage (browser storage)
+
+Login checks saved data
+
+After login, it hides the form and shows a Log out button (top right)
+
+Logout brings you back to the login screen
+
+You can:
+
+Copy the code into a .html file (e.g., index.html)
+
+Open it in your browser
+
+If you want, I can upgrade this with:
+
+Better design (modern UI)
+
+Multiple users instead of just one
+
+Password hashing (more secure)
+
+Backend (real database, not just browser storage)
+
+Just tell me 👍
+
+
+replace submit text in login to say Log in and down will say "Sign Up"
+
+Done.
+
+Now:
+
+The main button says “Log in” when in login mode
+
+The button below says “Sign Up”
+
+When you switch modes, the text updates properly (e.g., “Sign Up” / “Back to Login”)
+
+If you want it styled like real apps (links instead of buttons, nicer spacing), I can refine the UI next.
+
+
+add inside Login name up bacause how the fk will someone login
+
+Done.
+
+Now the login actually makes sense:
+
+Name is always shown (login + signup)
+
+Birth date only shows during sign up
+
+Login now requires Name + Password, not just password
+
+If you want next upgrade, I can make it feel like a real app:
+
+Show user name after login (“Welcome, John”)
+
+Add password visibility toggle 👀
+
+Store multiple accounts instead of just one
+
+Just say 👍
+
+
+make it so it will detect if the username is claimed
+
+Done.
+
+Now your website supports:
+
+✅ Multiple user accounts
+
+❌ Prevents duplicate usernames (“Username already taken”)
+
+🔐 Login checks both username + password
+
+💾 Stores all users in localStorage
+
+If you want next upgrade, I can make it even more real:
+
+Show logged-in username on dashboard
+
+Add “forgot password”
+
+Add password rules (min length, symbols)
+
+Or turn it into a full backend system (real database)
+
+Just say 👍
+
+
+Įkeltas vaizdas
+without the gmail
+
+Simple Auth Website
+· html
   <input type="password" id="password" placeholder="Password">
-  <input type="date" id="birth" style="display:none">
-  <button id="submitBtn" onclick="submitForm()">Log in</button>
-  <button id="switchBtn" onclick="toggleMode()">Sign Up</button>
+
+  <button onclick="submitForm()" id="actionBtn">Sign up</button>
 </div>
 
 <div id="dashboard">
@@ -27,46 +119,63 @@
 </div>
 
 <script>
-  let isSignup = false;
+  let isSignup = true;
 
-  function toggleMode() {
-    isSignup = !isSignup;
-    document.getElementById('title').innerText = isSignup ? 'Sign Up' : 'Login';
+  function setMode(signup) {
+    isSignup = signup;
 
-    // name is always required for both login and signup
-    document.getElementById('name').style.display = 'block';
+    document.getElementById('signupTab').classList.toggle('active', signup);
+    document.getElementById('loginTab').classList.toggle('active', !signup);
 
-    // birth only for signup
-    document.getElementById('birth').style.display = isSignup ? 'block' : 'none';
+    document.getElementById('actionBtn').innerText = signup ? 'Sign up' : 'Sign in';
+  }
 
-    document.getElementById('submitBtn').innerText = isSignup ? 'Sign Up' : 'Log in';
-    document.getElementById('switchBtn').innerText = isSignup ? 'Back to Login' : 'Sign Up';
+  function getUsers() {
+    return JSON.parse(localStorage.getItem('users') || '[]');
+  }
+
+  function saveUsers(users) {
+    localStorage.setItem('users', JSON.stringify(users));
   }
 
   function submitForm() {
-    const name = document.getElementById('name').value;
+    const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
-    const birth = document.getElementById('birth').value;
+
+    if (!username || !password) {
+      alert('Fill all fields');
+      return;
+    }
+
+    const users = getUsers();
 
     if (isSignup) {
-      if (!name || !password || !birth) {
-        alert('Fill all fields');
+      const exists = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+
+      if (exists) {
+        alert('Username already taken');
         return;
       }
-      localStorage.setItem('user', JSON.stringify({ name, password, birth }));
-      alert('Signed up! Now log in.');
-      toggleMode();
+
+      users.push({ username, password });
+      saveUsers(users);
+
+      alert('Account created! Now sign in.');
+      setMode(false);
+
     } else {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (!user || user.password !== password) {
+      const user = users.find(u => u.username === username && u.password === password);
+
+      if (!user) {
         alert('Invalid login');
         return;
       }
-      showDashboard();
+
+      showDashboard(username);
     }
   }
 
-  function showDashboard() {
+  function showDashboard(name) {
     document.getElementById('auth').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
   }
@@ -79,3 +188,5 @@
 
 </body>
 </html>
+
+If you want next upgra
