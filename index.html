@@ -20,25 +20,26 @@
 
     .box {
       background: #1b1d36;
-      padding: 25px;
-      border-radius: 12px;
-      width: 320px;
+      padding: 30px;
+      border-radius: 14px;
+      width: 340px;
       max-width: 100%;
     }
 
     .tabs {
       display: flex;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       border-radius: 10px;
       overflow: hidden;
     }
 
     .tab {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       text-align: center;
       cursor: pointer;
       background: #0f1020;
+      font-size: 16px;
     }
 
     .tab.active {
@@ -47,22 +48,24 @@
 
     input {
       width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 6px;
+      padding: 14px;
+      margin: 12px 0;
+      border-radius: 8px;
       border: none;
       outline: none;
+      font-size: 16px;
     }
 
     button {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
+      padding: 14px;
+      margin-top: 12px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       background: #3b3f7a;
       color: white;
+      font-size: 16px;
     }
 
     #dashboard {
@@ -77,35 +80,58 @@
 
     .topbar {
       position: absolute;
-      top: 15px;
-      left: 15px;
-      font-size: 18px;
+      top: 20px;
+      left: 20px;
+      font-size: 22px;
       font-weight: bold;
     }
 
     .logout {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      padding: 5px 10px;
+      top: 15px;
+      right: 15px;
+      padding: 6px 12px;
       background: #3b3f7a;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       color: white;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 14px;
       width: auto;
     }
 
+    /* 📱 MOBILE USERS GET BIGGER UI */
     @media (max-width: 480px) {
-      .topbar {
-        font-size: 16px;
+      .box {
+        width: 95%;
+        padding: 35px;
       }
+
+      .tab {
+        font-size: 18px;
+        padding: 14px;
+      }
+
+      input {
+        font-size: 18px;
+        padding: 16px;
+      }
+
+      button {
+        font-size: 18px;
+        padding: 16px;
+      }
+
+      .topbar {
+        font-size: 24px;
+      }
+
       .logout {
-        font-size: 11px;
-        padding: 4px 8px;
+        font-size: 14px;
+        padding: 7px 14px;
       }
     }
+
   </style>
 </head>
 <body>
