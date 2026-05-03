@@ -80,16 +80,17 @@
     }
 
     .logout {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 5px 10px;
-  background: #3b3f7a;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-  font-size: 12px;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 5px 10px;
+      background: #3b3f7a;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+      width: auto;
     }
   </style>
 </head>
@@ -120,10 +121,8 @@
 
   function setMode(signup) {
     isSignup = signup;
-
     document.getElementById('signupTab').classList.toggle('active', signup);
     document.getElementById('loginTab').classList.toggle('active', !signup);
-
     document.getElementById('actionBtn').innerText = signup ? 'Sign up' : 'Sign in';
   }
 
@@ -156,12 +155,9 @@
       users.push({ username, password });
       saveUsers(users);
       localStorage.setItem('currentUser', JSON.stringify({ username }));
-
       showDashboard(username);
-
     } else {
       const user = users.find(u => u.username === username && u.password === password);
-
       if (!user) {
         alert('Invalid login');
         return;
@@ -175,7 +171,6 @@
   function showDashboard(name) {
     document.getElementById('auth').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
-
     document.getElementById('displayName').innerText = name;
   }
 
