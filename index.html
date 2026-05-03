@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Mini Growtopia Login</title>
+<title>Mini 2D Game</title>
 <style>
     body {
         background:#1e1e1e;
         font-family:Arial;
         color:white;
         text-align:center;
+        overflow:hidden;
+        margin:0;
     }
     .frame {
         width:300px;
@@ -35,20 +37,51 @@
         font-size:16px;
         cursor:pointer;
     }
-    button:hover { background:#45a049; }
+    #world {
+        width:100vw;
+        height:100vh;
+        background:#3a3a3a;
+        position:relative;
+        display:none;
+        overflow:hidden;
+    }
+    .player {
+        width:30px;
+        height:40px;
+        background:#00aaff;
+        position:absolute;
+        border-radius:5px;
+    }
+    #chatBox {
+        position:absolute;
+        bottom:10px;
+        left:50%;
+        transform:translateX(-50%);
+        width:300px;
+    }
+    #chatMessages {
+        width:300px;
+        height:120px;
+        background:#00000080;
+        overflow-y:auto;
+        padding:5px;
+        border-radius:5px;
+        text-align:left;
+        font-size:14px;
+    }
 </style>
 </head>
 <body>
 
-<h1>Mini Growtopia</h1>
+<h1 id="title">Mini 2D Game</h1>
 
-<!-- MAIN MENU -->
+<!-- MENU -->
 <div id="menu" class="frame" style="display:block;">
     <button onclick="showFrame('signup')">Sign Up</button>
     <button onclick="showFrame('login')">Log In</button>
 </div>
 
-<!-- SIGN UP FRAME -->
+<!-- SIGN UP -->
 <div id="signup" class="frame">
     <h2>Create Account</h2>
     <input id="su_name" placeholder="Username">
@@ -57,7 +90,7 @@
     <button onclick="showFrame('menu')">Back</button>
 </div>
 
-<!-- LOGIN FRAME -->
+<!-- LOGIN -->
 <div id="login" class="frame">
     <h2>Log In</h2>
     <input id="li_name" placeholder="Username">
@@ -66,56 +99,127 @@
     <button onclick="showFrame('menu')">Back</button>
 </div>
 
-<!-- GAME FRAME -->
-<div id="game" class="frame">
-    <h2>Welcome, <span id="playerName"></span>!</h2>
-    <p>Game world loading...</p>
+<!-- WORLD -->
+<div id="world">
+    <div id="chatBox">
+        <div id="chatMessages"></div>
+        <input id="chatInput" placeholder="Press Enter to chat">
+    </div>
 </div>
 
 <script>
-    // Reserved creator names
-    const blockedNames = ["Emilis", "Krooks", "Admin", "Owner"];
+/* -------------------------
+   ACCOUNT SYSTEM
+--------------------------*/
 
-    // Load saved accounts
-    let accounts = JSON.parse(localStorage.getItem("accounts") || "{}");
+let accounts = JSON.parse(localStorage.getItem("accounts") || "{}");
+let players = {};
+let currentPlayer = null;
 
-    function showFrame(id) {
-        document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
-        document.getElementById(id).style.display = "block";
+function showFrame(id) {
+    document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
+    document.getElementById(id).style.display = "block";
+}
+
+function signUp() {
+    let name = su_name.value.trim();
+    let pass = su_pass.value;
+
+    if (!name || !pass) return alert("Fill everything");
+
+    if (accounts[name]) return alert("Name already taken");
+
+    accounts[name] = pass;
+    localStorage.setItem("accounts", JSON.stringify(accounts));
+
+    alert("Account created!");
+    showFrame("login");
+}
+
+function logIn() {
+    let name = li_name.value.trim();
+    let pass = li_pass.value;
+
+    if (accounts[name] && accounts[name] === pass) {
+        startGame(name);
+    } else {
+        alert("Wrong username or password");
     }
+}
 
-    function signUp() {
-        let name = su_name.value.trim();
-        let pass = su_pass.value;
+/* -------------------------
+   GAME WORLD
+--------------------------*/
+function startGame(name) {
+    document.getElementById("title").style.display = "none";
+    document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
+    document.getElementById("world").style.display = "block";
 
-        if (!name || !pass) return alert("Fill everything");
+    currentPlayer = {
+        name: name,
+        x: 200,
+        y: 200,
+        element: createPlayerElement(name)
+    };
 
-        if (blockedNames.includes(name)) {
-            return alert("This name is reserved by creators. Choose another.");
-        }
+    players[name] = currentPlayer;
+    updatePlayerPosition(currentPlayer);
+}
 
-        if (accounts[name]) {
-            return alert("Name already taken");
-        }
+function createPlayerElement(name) {
+    let div = document.createElement("div");
+    div.className = "player";
+    div.innerHTML = `<span style='position:absolute;top:-18px;font-size:12px;'>${name}</span>`;
+    document.getElementById("world").appendChild(div);
+    return div;
+}
 
-        accounts[name] = pass;
-        localStorage.setItem("accounts", JSON.stringify(accounts));
+function updatePlayerPosition(p) {
+    p.element.style.left = p.x + "px";
+    p.element.style.top = p.y + "px";
+}
 
-        alert("Account created!");
-        showFrame("login");
+/* -------------------------
+   MOVEMENT
+--------------------------*/
+let keys = {};
+
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+function gameLoop() {
+    if (currentPlayer) {
+        if (keys["a"] || keys["ArrowLeft"]) currentPlayer.x -= 3;
+        if (keys["d"] || keys["ArrowRight"]) currentPlayer.x += 3;
+
+        if (currentPlayer.y < 400) currentPlayer.y += 3;
+
+        updatePlayerPosition(currentPlayer);
     }
+    requestAnimationFrame(gameLoop);
+}
+gameLoop();
 
-    function logIn() {
-        let name = li_name.value.trim();
-        let pass = li_pass.value;
-
-        if (accounts[name] && accounts[name] === pass) {
-            document.getElementById("playerName").innerText = name;
-            showFrame("game");
-        } else {
-            alert("Wrong username or password");
+/* -------------------------
+   CHAT SYSTEM
+--------------------------*/
+document.getElementById("chatInput").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        let msg = this.value.trim();
+        if (msg.length > 0) {
+            addChatMessage(currentPlayer.name + ": " + msg);
         }
+        this.value = "";
     }
+});
+
+function addChatMessage(text) {
+    let box = document.getElementById("chatMessages");
+    let div = document.createElement("div");
+    div.textContent = text;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
 </script>
 
 </body>
