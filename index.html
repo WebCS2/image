@@ -122,7 +122,12 @@
       border: none;
     }
 
-    /* JOYSTICKS / MOBILE CONTROLS */
+    /* JOYSTICKS / MOBILE CONTROLS (HIDDEN BY DEFAULT) */
+    #leftJoystick,
+    #jumpBtn {
+      display: none;
+    }
+
     #leftJoystick {
       position: fixed;
       bottom: 20px;
@@ -267,6 +272,16 @@
     "noob": "purple",
     "Milk": "purple"
   };
+
+  // Detect touch device -> show joysticks only on mobile
+  function isTouchDevice() {
+    return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  }
+
+  if (isTouchDevice()) {
+    leftJoystick.style.display = "block";
+    jumpBtn.style.display = "block";
+  }
 
   function showFrame(id) {
     document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
@@ -443,7 +458,6 @@
       if (moveLeft) { me.x -= 3; moved = true; }
       if (moveRight) { me.x += 3; moved = true; }
 
-      // Gravity + jump physics
       me.vy += 0.6;
       me.y += me.vy;
 
@@ -485,7 +499,7 @@
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  // JOYSTICK LOGIC
+  // JOYSTICK LOGIC (MOBILE ONLY)
   let joystickActive = false;
   let joystickCenter = { x: 0, y: 0 };
 
@@ -520,13 +534,12 @@
     leftJoystickInner.style.transform = "translate(0px, 0px)";
   }, { passive: false });
 
-  // JUMP BUTTON (MOBILE)
   jumpBtn.addEventListener("touchstart", e => {
     e.preventDefault();
     doJump();
   }, { passive: false });
 
-  jumpBtn.addEventListener("click", e => {
+  jumpBtn.addEventListener("click", () => {
     doJump();
   });
 </script>
