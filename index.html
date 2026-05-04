@@ -4,7 +4,7 @@
   <title>Pixelia Worlds</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
+    <style>
     body {
       margin: 0;
       background: #4da6ff;
@@ -79,6 +79,16 @@
       background: #00aaff;
       position: absolute;
       border-radius: 5px;
+    }
+
+    .player-name {
+      position: absolute;
+      top: -18px;
+      font-size: 12px;
+      color: white;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
     }
 
     #chatBox {
@@ -208,7 +218,7 @@
   <button id="jumpBtn">Jump</button>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
 
 <script>
@@ -242,7 +252,11 @@ const jumpBtn = document.getElementById("jumpBtn");
 const WORLD_WIDTH = 2000;
 const WORLD_HEIGHT = 1200;
 
-const ADMINS = ["noob", "Milk"];
+const ADMINS = ["noob", "milk"]; // stored lowercase
+
+function isAdmin(name) {
+  return ADMINS.includes((name || "").toLowerCase());
+}
 
 /* ORIENTATION */
 function isTouchDevice() {
@@ -276,31 +290,33 @@ async function hashPassword(p) {
 
 /* SIGN UP */
 async function signUp() {
-  const u = su_username.value.trim();
+  let u = su_username.value.trim().toLowerCase();
   const p = su_pass.value;
   if (!u || !p) return alert("Fill everything");
 
   const ref = db.ref("accounts/" + u);
   if ((await ref.once("value")).exists()) return alert("Username taken");
 
-  await ref.set({ username: u, passwordHash: await hashPassword(p), banned: false });
+  await ref.set({ username: u, passwordHash: await hashPassword(p), banned: false, invisible: false });
   currentUser = u;
   startGame();
 }
 
 /* LOGIN */
 async function logIn() {
-  const u = li_username.value.trim();
+  let u = li_username.value.trim().toLowerCase();
   const p = li_pass.value;
   if (!u || !p) return alert("Fill everything");
 
-  const ref = db.ref("accounts/" + u);
-  const snap = await ref.once("value");
+  const accRef = db.ref("accounts/" + u);
+  const snap = await accRef.once("value");
   if (!snap.exists()) return alert("User not found");
 
-  if (snap.val().banned) return alert("You are banned.");
+  const acc = snap.val();
 
-  if (await hashPassword(p) !== snap.val().passwordHash)
+  if (acc.banned) return alert("You are banned.");
+
+  if (await hashPassword(p) !== acc.passwordHash)
     return alert("Wrong password");
 
   currentUser = u;
@@ -329,8 +345,16 @@ async function startGame() {
   }
 
   const meRef = db.ref("players/" + currentUser);
-  meRef.set({ username: currentUser, x: 200, y: 400 });
+  meRef.set({ username: currentUser, x: 200, y: 400, vy: 0, onGround: true, invisible: false });
   meRef.onDisconnect().remove();
+
+  // If this client gets kicked (player node removed), auto-logout
+  db.ref("players/" + currentUser).on("value", s => {
+    if (!s.exists() && currentUser) {
+      alert("You were kicked.");
+      logout();
+    }
+  });
 
   db.ref("players").on("value", s => {
     const data = s.val() || {};
@@ -342,19 +366,23 @@ async function startGame() {
       const p = data[id];
       if (!players[id]) {
         players[id] = {
-          x: p.x, y: p.y, vy: 0, onGround: true,
+          x: p.x, y: p.y, vy: p.vy || 0, onGround: p.onGround ?? true,
           username: p.username,
+          invisible: !!p.invisible,
           element: createPlayer(p.username)
         };
       }
       players[id].x = p.x;
       players[id].y = p.y;
+      players[id].vy = p.vy || 0;
+      players[id].onGround = p.onGround ?? true;
+      players[id].invisible = !!p.invisible;
     }
   });
 
   db.ref("chat").limitToLast(50).on("child_added", s => {
     const m = s.val();
-    if (m.hidden && !ADMINS.includes(currentUser)) return;
+    if (m.hidden && !isAdmin(currentUser)) return;
     addChat(m.text);
   });
 
@@ -365,7 +393,16 @@ async function startGame() {
 function createPlayer(name) {
   const div = document.createElement("div");
   div.className = "player";
-  div.innerHTML = `<span style="position:absolute;top:-18px;font-size:12px;color:white;">${name}</span>`;
+  const nameSpan = document.createElement("div");
+  nameSpan.className = "player-name";
+
+  const lower = (name || "").toLowerCase();
+  if (lower === "noob" || lower === "milk") {
+    nameSpan.style.color = "purple";
+  }
+
+  nameSpan.textContent = name;
+  div.appendChild(nameSpan);
   worldInner.appendChild(div);
   return div;
 }
@@ -378,83 +415,150 @@ function addChat(html) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-chatInput.addEventListener("keydown", async e => {
+
+  chatInput.addEventListener("keydown", async e => {
   if (e.key !== "Enter" || !currentUser) return;
 
   const t = chatInput.value.trim();
   if (!t) return;
 
+  // Admin command
   if (t.startsWith("/")) {
-    if (!ADMINS.includes(currentUser)) {
-      chatInput.value = "";
-      return;
+    if (isAdmin(currentUser)) {
+      handleAdminCommand(t);
     }
-    handleAdminCommand(t);
     chatInput.value = "";
     return;
   }
 
-  db.ref("chat").push({ text: `<b>${currentUser}:</b> ${t}` });
+  // Normal chat
+  const nameHtml = isAdmin(currentUser)
+    ? `<span style="color:purple;font-weight:bold;">${currentUser}</span>`
+    : `<b>${currentUser}</b>`;
+
+  db.ref("chat").push({ text: `${nameHtml}: ${t}` });
   chatInput.value = "";
 });
 
 /* ADMIN COMMANDS */
 async function handleAdminCommand(cmd) {
-  const parts = cmd.split(" ");
+  const parts = cmd.trim().split(" ");
   const c = parts[0].toLowerCase();
 
   function hide(msg) {
     db.ref("chat").push({ text: msg, hidden: true });
   }
 
-  if (c === "/kick") {
-    const u = parts[1];
+  // /kick username  (instant)
+  if (c === "/kick" && parts[1]) {
+    const u = parts[1].toLowerCase();
     db.ref("players/" + u).remove();
     hide(`Kicked ${u}`);
+    return;
   }
 
-  if (c === "/ban") {
-    const u = parts[1];
+  // /ban username
+  if (c === "/ban" && parts[1]) {
+    const u = parts[1].toLowerCase();
     db.ref("bans/" + u).set(true);
     db.ref("accounts/" + u).update({ banned: true });
     db.ref("players/" + u).remove();
     hide(`Banned ${u}`);
+    return;
   }
 
-  if (c === "/unban") {
-    const u = parts[1];
+  // /unban username
+  if (c === "/unban" && parts[1]) {
+    const u = parts[1].toLowerCase();
     db.ref("bans/" + u).remove();
     db.ref("accounts/" + u).update({ banned: false });
     hide(`Unbanned ${u}`);
+    return;
   }
 
-  if (c === "/tp") {
-    const u = parts[1];
+  // /tp username  (instant to admin)
+  if (c === "/tp" && parts[1] && !parts[2]) {
+    const target = parts[1].toLowerCase();
     const me = players[currentUser];
-    db.ref("players/" + u).update({ x: me.x, y: me.y });
-    hide(`Teleported ${u}`);
+    if (me) {
+      const pos = { x: me.x, y: me.y };
+      db.ref("players/" + target).update(pos);
+      if (players[target]) {
+        players[target].x = pos.x;
+        players[target].y = pos.y;
+      }
+      hide(`Teleported ${target} to you`);
+    }
+    return;
   }
 
-  if (c === "/setpos") {
-    const u = parts[1];
+  // /tp username1 username2
+  if (c === "/tp" && parts[1] && parts[2]) {
+    const u1 = parts[1].toLowerCase();
+    const u2 = parts[2].toLowerCase();
+    const p2 = players[u2];
+    if (p2) {
+      const pos = { x: p2.x, y: p2.y };
+      db.ref("players/" + u1).update(pos);
+      if (players[u1]) {
+        players[u1].x = pos.x;
+        players[u1].y = pos.y;
+      }
+      hide(`Teleported ${u1} to ${u2}`);
+    }
+    return;
+  }
+
+  // /setpos username x y
+  if (c === "/setpos" && parts.length === 4) {
+    const u = parts[1].toLowerCase();
     const x = parseInt(parts[2]);
     const y = parseInt(parts[3]);
     db.ref("players/" + u).update({ x, y });
+    if (players[u]) {
+      players[u].x = x;
+      players[u].y = y;
+    }
     hide(`Setpos ${u}`);
+    return;
   }
 
+  // /clear
   if (c === "/clear") {
     db.ref("chat").remove();
     hide("Chat cleared");
+    return;
   }
 
-  if (c === "/announce") {
+  // /announce message
+  if (c === "/announce" && parts.length > 1) {
     const msg = parts.slice(1).join(" ");
-    db.ref("chat").push({ text: `<span style='color:yellow;font-weight:bold;'>ANNOUNCEMENT: ${msg}</span>` });
+    db.ref("chat").push({
+      text: `<span style='color:yellow;font-weight:bold;'>ANNOUNCEMENT: ${msg}</span>`
+    });
+    return;
+  }
+
+  // /invisible username  (admin invis, no name/skin for non-admins)
+  if (c === "/invisible" && parts[1]) {
+    const u = parts[1].toLowerCase();
+    db.ref("accounts/" + u).update({ invisible: true });
+    db.ref("players/" + u).update({ invisible: true });
+    hide(`Made ${u} invisible`);
+    return;
+  }
+
+  // /uninvisible username
+  if (c === "/uninvisible" && parts[1]) {
+    const u = parts[1].toLowerCase();
+    db.ref("accounts/" + u).update({ invisible: false });
+    db.ref("players/" + u).update({ invisible: false });
+    hide(`Made ${u} visible`);
+    return;
   }
 }
 
-/* KEYBOARD */
+  /* KEYBOARD */
 document.addEventListener("keydown", e => {
   keys[e.key] = true;
   if (e.key === " ") doJump();
@@ -517,7 +621,10 @@ function gameLoop() {
     me.x = Math.max(0, Math.min(WORLD_WIDTH - 30, me.x));
     me.y = Math.max(0, Math.min(WORLD_HEIGHT - 40, me.y));
 
-    db.ref("players/" + currentUser).update({ x: me.x, y: me.y });
+    // sync to Firebase
+    db.ref("players/" + currentUser).update({
+      x: me.x, y: me.y, vy: me.vy, onGround: me.onGround, invisible: !!me.invisible
+    });
 
     const camX = Math.min(Math.max(me.x - window.innerWidth/2, 0), WORLD_WIDTH - window.innerWidth);
     const camY = Math.min(Math.max(me.y - window.innerHeight/2, 0), WORLD_HEIGHT - window.innerHeight);
@@ -527,6 +634,15 @@ function gameLoop() {
 
     for (let id in players) {
       const p = players[id];
+
+      // invisible logic: only admins see invisible players
+      if (p.invisible && !isAdmin(currentUser)) {
+        p.element.style.display = "none";
+        continue;
+      } else {
+        p.element.style.display = "block";
+      }
+
       p.element.style.left = p.x + "px";
       p.element.style.top = p.y + "px";
     }
