@@ -18,8 +18,7 @@
     #rotateScreen {
       position: fixed;
       top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100vw; height: 100vh;
       background: #000;
       color: white;
       display: none;
@@ -27,7 +26,6 @@
       align-items: center;
       font-size: 28px;
       z-index: 999999;
-      text-align: center;
     }
 
     h1 { margin-top: 30px; }
@@ -61,7 +59,7 @@
       cursor: pointer;
     }
 
-    /* WORLD */
+    /* WORLD + CAMERA */
     #world {
       position: relative;
       width: 100vw;
@@ -74,7 +72,9 @@
       position: absolute;
       width: 2000px;
       height: 1200px;
-      background: #4da6ff; /* BLUE SKY */
+      background-image: url('https://i.imgur.com/8wP4VxS.jpeg'); /* SKY + CLOUDS */
+      background-size: cover;
+      background-position: center;
     }
 
     .player {
@@ -85,12 +85,13 @@
       border-radius: 5px;
     }
 
-    /* CHAT */
+    /* CHAT TOP-RIGHT */
     #chatBox {
       position: fixed;
       top: 10px;
       right: 10px;
       width: 260px;
+      max-width: 70vw;
       display: flex;
       flex-direction: column;
       z-index: 9999;
@@ -138,7 +139,7 @@
       z-index: 9999;
     }
 
-    /* JOYSTICKS (MOBILE ONLY) */
+    /* JOYSTICKS (HIDDEN ON PC) */
     #leftJoystick, #jumpBtn {
       display: none;
     }
@@ -185,7 +186,7 @@
 </head>
 <body>
 
-<div id="rotateScreen">Turn website for computer ON</div>
+<div id="rotateScreen">Rotate your device</div>
 
 <h1 id="title">Pixelia Worlds</h1>
 
@@ -232,7 +233,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
 
 <script>
-/* FIREBASE */
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCx4dKsPQ5ph7g7P6E7ZAv7NarT0uQhZGQ",
   authDomain: "pixeliaworlds.firebaseapp.com",
@@ -241,6 +242,7 @@ const firebaseConfig = {
   messagingSenderId: "261360406874",
   appId: "1:261360406874:web:c516b77a56eb529cfea363"
 };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -253,48 +255,40 @@ let joystickDir = 0;
 const world = document.getElementById("world");
 const worldInner = document.getElementById("worldInner");
 const rotateScreen = document.getElementById("rotateScreen");
-const playerCountSpan = document.getElementById("playerCount");
-const chatInput = document.getElementById("chatInput");
-const chatMessages = document.getElementById("chatMessages");
-const leftJoystick = document.getElementById("leftJoystick");
-const leftJoystickInner = document.getElementById("leftJoystickInner");
-const jumpBtn = document.getElementById("jumpBtn");
 
 const WORLD_WIDTH = 2000;
 const WORLD_HEIGHT = 1200;
 
+/* SPECIAL USERS */
 const specialUsers = {
   "noob": "purple",
   "Milk": "purple"
 };
 
-/* ORIENTATION */
+/* ORIENTATION CHECK */
+function checkOrientation() {
+  if (window.innerHeight > window.innerWidth && isTouchDevice()) {
+    rotateScreen.style.display = "flex";
+    world.style.display = "none";
+  } else {
+    rotateScreen.style.display = "none";
+    if (currentUser) world.style.display = "block";
+  }
+}
+window.addEventListener("resize", checkOrientation);
+
+/* TOUCH DEVICE CHECK */
 function isTouchDevice() {
   return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 }
 
-function checkOrientation() {
-  if (isTouchDevice()) {
-    if (window.innerHeight > window.innerWidth) {
-      rotateScreen.style.display = "flex";
-      world.style.display = "none";
-    } else {
-      rotateScreen.style.display = "none";
-      if (currentUser) world.style.display = "block";
-    }
-  }
-}
-
-window.addEventListener("resize", checkOrientation);
-window.addEventListener("orientationchange", checkOrientation);
-
-/* UI */
+/* UI FRAMES */
 function showFrame(id) {
   document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
   document.getElementById(id).style.display = "block";
 }
 
-/* HASH */
+/* PASSWORD HASH */
 async function hashPassword(p) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(p));
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
@@ -304,12 +298,14 @@ async function hashPassword(p) {
 async function signUp() {
   const u = su_username.value.trim();
   const p = su_pass.value;
+
   if (!u || !p) return alert("Fill everything");
 
   const ref = db.ref("accounts/" + u);
   if ((await ref.once("value")).exists()) return alert("Username taken");
 
   await ref.set({ username: u, passwordHash: await hashPassword(p) });
+
   currentUser = u;
   startGame();
 }
@@ -318,7 +314,6 @@ async function signUp() {
 async function logIn() {
   const u = li_username.value.trim();
   const p = li_pass.value;
-  if (!u || !p) return alert("Fill everything");
 
   const ref = db.ref("accounts/" + u);
   const snap = await ref.once("value");
@@ -353,8 +348,7 @@ async function startGame() {
   }
 
   const ref = db.ref("players");
-  const snap = await ref.once("value");
-  if (snap.numChildren() >= 10) {
+  if ((await ref.once("value")).numChildren() >= 10) {
     alert("Server full");
     logout();
     return;
@@ -364,9 +358,8 @@ async function startGame() {
   meRef.set({ username: currentUser, x: 200, y: 400 });
   meRef.onDisconnect().remove();
 
-  db.ref("players").on("value", s => {
-    const data = s.val() || {};
-    playerCountSpan.textContent = Object.keys(data).length;
+  db.ref("players").on("value", snap => {
+    const data = snap.val() || {};
 
     for (let id in players)
       if (!data[id]) { players[id].element.remove(); delete players[id]; }
@@ -395,12 +388,14 @@ async function startGame() {
   gameLoop();
 }
 
-/* PLAYER ELEMENT */
+/* CREATE PLAYER ELEMENT */
 function createPlayer(name) {
   const div = document.createElement("div");
   div.className = "player";
+
   const color = specialUsers[name] || "white";
   const display = specialUsers[name] ? "@" + name : name;
+
   div.innerHTML = `<span style="position:absolute;top:-18px;font-size:12px;color:${color};">${display}</span>`;
   worldInner.appendChild(div);
   return div;
@@ -426,15 +421,9 @@ chatInput.addEventListener("keydown", e => {
 /* KEYBOARD */
 document.addEventListener("keydown", e => {
   keys[e.key] = true;
-  if (e.key === " " || e.code === "Space") {
-    e.preventDefault();
-    doJump();
-  }
+  if (e.key === " ") doJump();
 });
-
-document.addEventListener("keyup", e => {
-  keys[e.key] = false;
-});
+document.addEventListener("keyup", e => keys[e.key] = false);
 
 /* JUMP */
 function doJump() {
@@ -449,14 +438,12 @@ function doJump() {
 let joyActive = false, joyCenter = {x:0,y:0};
 
 leftJoystick.addEventListener("touchstart", e => {
-  e.preventDefault();
   joyActive = true;
   const r = leftJoystick.getBoundingClientRect();
-  joyCenter = { x: r.left + r.width/2, y: r.top + r.height/2 };
-}, { passive: false });
+  joyCenter = { x: r.left+r.width/2, y: r.top+r.height/2 };
+});
 
 leftJoystick.addEventListener("touchmove", e => {
-  e.preventDefault();
   if (!joyActive) return;
   const t = e.touches[0];
   const dx = t.clientX - joyCenter.x;
@@ -464,25 +451,18 @@ leftJoystick.addEventListener("touchmove", e => {
   const cdx = Math.max(-max, Math.min(max, dx));
   leftJoystickInner.style.transform = `translate(${cdx}px,0)`;
   joystickDir = cdx > 10 ? 1 : cdx < -10 ? -1 : 0;
-}, { passive: false });
+});
 
-leftJoystick.addEventListener("touchend", e => {
-  e.preventDefault();
+leftJoystick.addEventListener("touchend", () => {
   joyActive = false;
   joystickDir = 0;
   leftJoystickInner.style.transform = "translate(0,0)";
-}, { passive: false });
-
-jumpBtn.addEventListener("touchstart", e => {
-  e.preventDefault();
-  doJump();
-}, { passive: false });
-
-jumpBtn.addEventListener("click", () => {
-  doJump();
 });
 
-/* GAME LOOP */
+jumpBtn.addEventListener("touchstart", doJump);
+jumpBtn.addEventListener("click", doJump);
+
+/* CAMERA + PHYSICS */
 function gameLoop() {
   if (currentUser && players[currentUser]) {
     const me = players[currentUser];
