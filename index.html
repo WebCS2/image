@@ -7,14 +7,13 @@
   <style>
     body {
       margin: 0;
-      background: #1e1e1e;
+      background: #4da6ff;
       color: white;
       font-family: Arial, sans-serif;
       overflow: hidden;
       text-align: center;
     }
 
-    /* ROTATE DEVICE SCREEN */
     #rotateScreen {
       position: fixed;
       top: 0; left: 0;
@@ -59,7 +58,6 @@
       cursor: pointer;
     }
 
-    /* WORLD + CAMERA */
     #world {
       position: relative;
       width: 100vw;
@@ -72,9 +70,7 @@
       position: absolute;
       width: 2000px;
       height: 1200px;
-      background-image: url('https://i.imgur.com/8wP4VxS.jpeg'); /* SKY + CLOUDS */
-      background-size: cover;
-      background-position: center;
+      background: #4da6ff;
     }
 
     .player {
@@ -85,13 +81,11 @@
       border-radius: 5px;
     }
 
-    /* CHAT TOP-RIGHT */
     #chatBox {
       position: fixed;
       top: 10px;
       right: 10px;
       width: 260px;
-      max-width: 70vw;
       display: flex;
       flex-direction: column;
       z-index: 9999;
@@ -127,19 +121,6 @@
       border: none;
     }
 
-    #statusBar {
-      position: fixed;
-      top: 5px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.6);
-      padding: 4px 10px;
-      border-radius: 10px;
-      font-size: 13px;
-      z-index: 9999;
-    }
-
-    /* JOYSTICKS (HIDDEN ON PC) */
     #leftJoystick, #jumpBtn {
       display: none;
     }
@@ -214,8 +195,6 @@
 <div id="world">
   <div id="worldInner"></div>
 
-  <div id="statusBar">Players online: <span id="playerCount">0</span>/10</div>
-
   <div id="chatBox">
     <div id="chatMessages"></div>
     <input id="chatInput" placeholder="Type message and press Enter">
@@ -233,7 +212,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
 
 <script>
-/* FIREBASE CONFIG */
+/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyCx4dKsPQ5ph7g7P6E7ZAv7NarT0uQhZGQ",
   authDomain: "pixeliaworlds.firebaseapp.com",
@@ -242,7 +221,6 @@ const firebaseConfig = {
   messagingSenderId: "261360406874",
   appId: "1:261360406874:web:c516b77a56eb529cfea363"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -255,19 +233,24 @@ let joystickDir = 0;
 const world = document.getElementById("world");
 const worldInner = document.getElementById("worldInner");
 const rotateScreen = document.getElementById("rotateScreen");
+const chatInput = document.getElementById("chatInput");
+const chatMessages = document.getElementById("chatMessages");
+const leftJoystick = document.getElementById("leftJoystick");
+const leftJoystickInner = document.getElementById("leftJoystickInner");
+const jumpBtn = document.getElementById("jumpBtn");
 
 const WORLD_WIDTH = 2000;
 const WORLD_HEIGHT = 1200;
 
-/* SPECIAL USERS */
-const specialUsers = {
-  "noob": "purple",
-  "Milk": "purple"
-};
+const ADMINS = ["noob", "Milk"];
 
-/* ORIENTATION CHECK */
+/* ORIENTATION */
+function isTouchDevice() {
+  return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+}
+
 function checkOrientation() {
-  if (window.innerHeight > window.innerWidth && isTouchDevice()) {
+  if (isTouchDevice() && window.innerHeight > window.innerWidth) {
     rotateScreen.style.display = "flex";
     world.style.display = "none";
   } else {
@@ -275,20 +258,17 @@ function checkOrientation() {
     if (currentUser) world.style.display = "block";
   }
 }
+
 window.addEventListener("resize", checkOrientation);
+window.addEventListener("orientationchange", checkOrientation);
 
-/* TOUCH DEVICE CHECK */
-function isTouchDevice() {
-  return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-}
-
-/* UI FRAMES */
+/* UI */
 function showFrame(id) {
   document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
   document.getElementById(id).style.display = "block";
 }
 
-/* PASSWORD HASH */
+/* HASH */
 async function hashPassword(p) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(p));
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
@@ -298,14 +278,12 @@ async function hashPassword(p) {
 async function signUp() {
   const u = su_username.value.trim();
   const p = su_pass.value;
-
   if (!u || !p) return alert("Fill everything");
 
   const ref = db.ref("accounts/" + u);
   if ((await ref.once("value")).exists()) return alert("Username taken");
 
-  await ref.set({ username: u, passwordHash: await hashPassword(p) });
-
+  await ref.set({ username: u, passwordHash: await hashPassword(p), banned: false });
   currentUser = u;
   startGame();
 }
@@ -314,10 +292,13 @@ async function signUp() {
 async function logIn() {
   const u = li_username.value.trim();
   const p = li_pass.value;
+  if (!u || !p) return alert("Fill everything");
 
   const ref = db.ref("accounts/" + u);
   const snap = await ref.once("value");
   if (!snap.exists()) return alert("User not found");
+
+  if (snap.val().banned) return alert("You are banned.");
 
   if (await hashPassword(p) !== snap.val().passwordHash)
     return alert("Wrong password");
@@ -347,19 +328,12 @@ async function startGame() {
     jumpBtn.style.display = "block";
   }
 
-  const ref = db.ref("players");
-  if ((await ref.once("value")).numChildren() >= 10) {
-    alert("Server full");
-    logout();
-    return;
-  }
-
   const meRef = db.ref("players/" + currentUser);
   meRef.set({ username: currentUser, x: 200, y: 400 });
   meRef.onDisconnect().remove();
 
-  db.ref("players").on("value", snap => {
-    const data = snap.val() || {};
+  db.ref("players").on("value", s => {
+    const data = s.val() || {};
 
     for (let id in players)
       if (!data[id]) { players[id].element.remove(); delete players[id]; }
@@ -380,23 +354,18 @@ async function startGame() {
 
   db.ref("chat").limitToLast(50).on("child_added", s => {
     const m = s.val();
-    const color = specialUsers[m.username] || "white";
-    const name = specialUsers[m.username] ? "@" + m.username : m.username;
-    addChat(`<span style="color:${color}">${name}</span>: ${m.text}`);
+    if (m.hidden && !ADMINS.includes(currentUser)) return;
+    addChat(m.text);
   });
 
   gameLoop();
 }
 
-/* CREATE PLAYER ELEMENT */
+/* PLAYER ELEMENT */
 function createPlayer(name) {
   const div = document.createElement("div");
   div.className = "player";
-
-  const color = specialUsers[name] || "white";
-  const display = specialUsers[name] ? "@" + name : name;
-
-  div.innerHTML = `<span style="position:absolute;top:-18px;font-size:12px;color:${color};">${display}</span>`;
+  div.innerHTML = `<span style="position:absolute;top:-18px;font-size:12px;color:white;">${name}</span>`;
   worldInner.appendChild(div);
   return div;
 }
@@ -409,14 +378,81 @@ function addChat(html) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-chatInput.addEventListener("keydown", e => {
-  if (e.key === "Enter" && currentUser) {
-    const t = chatInput.value.trim();
-    if (!t) return;
-    db.ref("chat").push({ username: currentUser, text: t });
+chatInput.addEventListener("keydown", async e => {
+  if (e.key !== "Enter" || !currentUser) return;
+
+  const t = chatInput.value.trim();
+  if (!t) return;
+
+  if (t.startsWith("/")) {
+    if (!ADMINS.includes(currentUser)) {
+      chatInput.value = "";
+      return;
+    }
+    handleAdminCommand(t);
     chatInput.value = "";
+    return;
   }
+
+  db.ref("chat").push({ text: `<b>${currentUser}:</b> ${t}` });
+  chatInput.value = "";
 });
+
+/* ADMIN COMMANDS */
+async function handleAdminCommand(cmd) {
+  const parts = cmd.split(" ");
+  const c = parts[0].toLowerCase();
+
+  function hide(msg) {
+    db.ref("chat").push({ text: msg, hidden: true });
+  }
+
+  if (c === "/kick") {
+    const u = parts[1];
+    db.ref("players/" + u).remove();
+    hide(`Kicked ${u}`);
+  }
+
+  if (c === "/ban") {
+    const u = parts[1];
+    db.ref("bans/" + u).set(true);
+    db.ref("accounts/" + u).update({ banned: true });
+    db.ref("players/" + u).remove();
+    hide(`Banned ${u}`);
+  }
+
+  if (c === "/unban") {
+    const u = parts[1];
+    db.ref("bans/" + u).remove();
+    db.ref("accounts/" + u).update({ banned: false });
+    hide(`Unbanned ${u}`);
+  }
+
+  if (c === "/tp") {
+    const u = parts[1];
+    const me = players[currentUser];
+    db.ref("players/" + u).update({ x: me.x, y: me.y });
+    hide(`Teleported ${u}`);
+  }
+
+  if (c === "/setpos") {
+    const u = parts[1];
+    const x = parseInt(parts[2]);
+    const y = parseInt(parts[3]);
+    db.ref("players/" + u).update({ x, y });
+    hide(`Setpos ${u}`);
+  }
+
+  if (c === "/clear") {
+    db.ref("chat").remove();
+    hide("Chat cleared");
+  }
+
+  if (c === "/announce") {
+    const msg = parts.slice(1).join(" ");
+    db.ref("chat").push({ text: `<span style='color:yellow;font-weight:bold;'>ANNOUNCEMENT: ${msg}</span>` });
+  }
+}
 
 /* KEYBOARD */
 document.addEventListener("keydown", e => {
@@ -440,7 +476,7 @@ let joyActive = false, joyCenter = {x:0,y:0};
 leftJoystick.addEventListener("touchstart", e => {
   joyActive = true;
   const r = leftJoystick.getBoundingClientRect();
-  joyCenter = { x: r.left+r.width/2, y: r.top+r.height/2 };
+  joyCenter = { x: r.left + r.width/2, y: r.top + r.height/2 };
 });
 
 leftJoystick.addEventListener("touchmove", e => {
@@ -462,7 +498,7 @@ leftJoystick.addEventListener("touchend", () => {
 jumpBtn.addEventListener("touchstart", doJump);
 jumpBtn.addEventListener("click", doJump);
 
-/* CAMERA + PHYSICS */
+/* GAME LOOP */
 function gameLoop() {
   if (currentUser && players[currentUser]) {
     const me = players[currentUser];
