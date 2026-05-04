@@ -61,7 +61,7 @@
       cursor: pointer;
     }
 
-    /* WORLD + CAMERA */
+    /* WORLD */
     #world {
       position: relative;
       width: 100vw;
@@ -74,7 +74,7 @@
       position: absolute;
       width: 2000px;
       height: 1200px;
-      background: #4da6ff; /* clean blue sky */
+      background: #4da6ff; /* BLUE SKY */
     }
 
     .player {
@@ -85,13 +85,12 @@
       border-radius: 5px;
     }
 
-    /* CHAT TOP-RIGHT */
+    /* CHAT */
     #chatBox {
       position: fixed;
       top: 10px;
       right: 10px;
       width: 260px;
-      max-width: 70vw;
       display: flex;
       flex-direction: column;
       z-index: 9999;
@@ -139,7 +138,7 @@
       z-index: 9999;
     }
 
-    /* JOYSTICKS (HIDDEN ON PC) */
+    /* JOYSTICKS (MOBILE ONLY) */
     #leftJoystick, #jumpBtn {
       display: none;
     }
@@ -233,6 +232,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
 
 <script>
+/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyCx4dKsPQ5ph7g7P6E7ZAv7NarT0uQhZGQ",
   authDomain: "pixeliaworlds.firebaseapp.com",
@@ -241,10 +241,10 @@ const firebaseConfig = {
   messagingSenderId: "261360406874",
   appId: "1:261360406874:web:c516b77a56eb529cfea363"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+/* GLOBALS */
 let currentUser = null;
 let players = {};
 let keys = {};
@@ -268,6 +268,7 @@ const specialUsers = {
   "Milk": "purple"
 };
 
+/* ORIENTATION */
 function isTouchDevice() {
   return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 }
@@ -281,24 +282,25 @@ function checkOrientation() {
       rotateScreen.style.display = "none";
       if (currentUser) world.style.display = "block";
     }
-  } else {
-    rotateScreen.style.display = "none";
   }
 }
 
 window.addEventListener("resize", checkOrientation);
 window.addEventListener("orientationchange", checkOrientation);
 
+/* UI */
 function showFrame(id) {
   document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
   document.getElementById(id).style.display = "block";
 }
 
+/* HASH */
 async function hashPassword(p) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(p));
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
 }
 
+/* SIGN UP */
 async function signUp() {
   const u = su_username.value.trim();
   const p = su_pass.value;
@@ -312,6 +314,7 @@ async function signUp() {
   startGame();
 }
 
+/* LOGIN */
 async function logIn() {
   const u = li_username.value.trim();
   const p = li_pass.value;
@@ -328,6 +331,7 @@ async function logIn() {
   startGame();
 }
 
+/* LOGOUT */
 function logout() {
   if (currentUser) db.ref("players/" + currentUser).remove();
   currentUser = null;
@@ -336,6 +340,7 @@ function logout() {
   showFrame("menu");
 }
 
+/* START GAME */
 async function startGame() {
   document.getElementById("title").style.display = "none";
   document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
@@ -390,6 +395,7 @@ async function startGame() {
   gameLoop();
 }
 
+/* PLAYER ELEMENT */
 function createPlayer(name) {
   const div = document.createElement("div");
   div.className = "player";
@@ -400,6 +406,7 @@ function createPlayer(name) {
   return div;
 }
 
+/* CHAT */
 function addChat(html) {
   const d = document.createElement("div");
   d.innerHTML = html;
@@ -416,6 +423,7 @@ chatInput.addEventListener("keydown", e => {
   }
 });
 
+/* KEYBOARD */
 document.addEventListener("keydown", e => {
   keys[e.key] = true;
   if (e.key === " " || e.code === "Space") {
@@ -428,6 +436,7 @@ document.addEventListener("keyup", e => {
   keys[e.key] = false;
 });
 
+/* JUMP */
 function doJump() {
   const me = players[currentUser];
   if (me && me.onGround) {
@@ -436,6 +445,7 @@ function doJump() {
   }
 }
 
+/* JOYSTICK */
 let joyActive = false, joyCenter = {x:0,y:0};
 
 leftJoystick.addEventListener("touchstart", e => {
@@ -472,6 +482,7 @@ jumpBtn.addEventListener("click", () => {
   doJump();
 });
 
+/* GAME LOOP */
 function gameLoop() {
   if (currentUser && players[currentUser]) {
     const me = players[currentUser];
