@@ -1,656 +1,97 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Pixelia Worlds</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    <style>
-    body {
-      margin: 0;
-      background: #4da6ff;
-      color: white;
-      font-family: Arial, sans-serif;
-      overflow: hidden;
-      text-align: center;
-    }
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    query,
+    where,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    #rotateScreen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: #000;
-      color: white;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      font-size: 28px;
-      z-index: 999999;
-    }
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCySjf5hLzR_23madNr6j8ItMFzJBndDBY",
+    authDomain: "clat-2b072.firebaseapp.com",
+    projectId: "clat-2b072",
+    storageBucket: "clat-2b072.firebasestorage.app",
+    messagingSenderId: "687262318153",
+    appId: "1:687262318153:web:9a3c9c8aebaa424fb70998"
+  };
 
-    h1 { margin-top: 30px; }
+  // Init Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    .frame {
-      width: 300px;
-      margin: 80px auto;
-      padding: 20px;
-      background: #2b2b2b;
-      border-radius: 10px;
-      display: none;
-    }
+  // 🔐 REGISTER
+  window.register = async function () {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    await createUserWithEmailAndPassword(auth, email, password);
+  };
 
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 5px;
-    }
+  // 🔑 LOGIN
+  window.login = async function () {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    await signInWithEmailAndPassword(auth, email, password);
+  };
 
-    button {
-      width: 95%;
-      padding: 10px;
-      margin-top: 10px;
-      background: #4caf50;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
+  // 🚪 LOGOUT
+  window.logout = async function () {
+    await signOut(auth);
+  };
 
-    #world {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      display: none;
-    }
-
-    #worldInner {
-      position: absolute;
-      width: 2000px;
-      height: 1200px;
-      background: #4da6ff;
-    }
-
-    .player {
-      width: 30px;
-      height: 40px;
-      background: #00aaff;
-      position: absolute;
-      border-radius: 5px;
-    }
-
-    .player-name {
-      position: absolute;
-      top: -18px;
-      font-size: 12px;
-      color: white;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-    }
-
-    #chatBox {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      width: 260px;
-      display: flex;
-      flex-direction: column;
-      z-index: 9999;
-    }
-
-    #chatMessages {
-      width: 100%;
-      height: 140px;
-      background: rgba(0,0,0,0.8);
-      overflow-y: auto;
-      padding: 8px;
-      border-radius: 10px;
-      font-size: 14px;
-      color: white;
-    }
-
-    #chatInput {
-      width: 100%;
-      padding: 6px;
-      margin-top: 6px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    #logoutBtn {
-      margin-top: 6px;
-      width: 100%;
-      padding: 6px;
-      background: #d9534f;
-      border-radius: 8px;
-      font-size: 14px;
-      border: none;
-    }
-
-    #leftJoystick, #jumpBtn {
-      display: none;
-    }
-
-    #leftJoystick {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.4);
-      touch-action: none;
-      z-index: 9999;
-    }
-
-    #leftJoystickInner {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 60px;
-      height: 60px;
-      margin-left: -30px;
-      margin-top: -30px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.4);
-    }
-
-    #jumpBtn {
-      position: fixed;
-      bottom: 40px;
-      right: 20px;
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      background: #ffcc00;
-      color: #000;
-      font-size: 18px;
-      border: none;
-      z-index: 9999;
-      touch-action: none;
-    }
-  </style>
-</head>
-<body>
-
-<div id="rotateScreen">Rotate your device</div>
-
-<h1 id="title">Pixelia Worlds</h1>
-
-<div id="menu" class="frame" style="display:block;">
-  <button onclick="showFrame('signup')">Sign Up</button>
-  <button onclick="showFrame('login')">Log In</button>
-</div>
-
-<div id="signup" class="frame">
-  <h2>Create Account</h2>
-  <input id="su_username" placeholder="Username">
-  <input id="su_pass" type="password" placeholder="Password">
-  <button onclick="signUp()">Create & Join</button>
-  <button onclick="showFrame('menu')">Back</button>
-</div>
-
-<div id="login" class="frame">
-  <h2>Log In</h2>
-  <input id="li_username" placeholder="Username">
-  <input id="li_pass" type="password" placeholder="Password">
-  <button onclick="logIn()">Enter</button>
-  <button onclick="showFrame('menu')">Back</button>
-</div>
-
-<div id="world">
-  <div id="worldInner"></div>
-
-  <div id="chatBox">
-    <div id="chatMessages"></div>
-    <input id="chatInput" placeholder="Type message and press Enter">
-    <button id="logoutBtn" onclick="logout()">Logout</button>
-  </div>
-
-  <div id="leftJoystick">
-    <div id="leftJoystickInner"></div>
-  </div>
-
-  <button id="jumpBtn">Jump</button>
-</div>
-
-  <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database-compat.js"></script>
-
-<script>
-/* FIREBASE */
-const firebaseConfig = {
-  apiKey: "AIzaSyCx4dKsPQ5ph7g7P6E7ZAv7NarT0uQhZGQ",
-  authDomain: "pixeliaworlds.firebaseapp.com",
-  projectId: "pixeliaworlds",
-  storageBucket: "pixeliaworlds.appspot.com",
-  messagingSenderId: "261360406874",
-  appId: "1:261360406874:web:c516b77a56eb529cfea363"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-/* GLOBALS */
-let currentUser = null;
-let players = {};
-let keys = {};
-let joystickDir = 0;
-
-const world = document.getElementById("world");
-const worldInner = document.getElementById("worldInner");
-const rotateScreen = document.getElementById("rotateScreen");
-const chatInput = document.getElementById("chatInput");
-const chatMessages = document.getElementById("chatMessages");
-const leftJoystick = document.getElementById("leftJoystick");
-const leftJoystickInner = document.getElementById("leftJoystickInner");
-const jumpBtn = document.getElementById("jumpBtn");
-
-const WORLD_WIDTH = 2000;
-const WORLD_HEIGHT = 1200;
-
-const ADMINS = ["noob", "milk", "Dance"]; // stored lowercase
-
-function isAdmin(name) {
-  return ADMINS.includes((name || "").toLowerCase());
-}
-
-/* ORIENTATION */
-function isTouchDevice() {
-  return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-}
-
-function checkOrientation() {
-  if (isTouchDevice() && window.innerHeight > window.innerWidth) {
-    rotateScreen.style.display = "flex";
-    world.style.display = "none";
-  } else {
-    rotateScreen.style.display = "none";
-    if (currentUser) world.style.display = "block";
-  }
-}
-
-window.addEventListener("resize", checkOrientation);
-window.addEventListener("orientationchange", checkOrientation);
-
-/* UI */
-function showFrame(id) {
-  document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
-  document.getElementById(id).style.display = "block";
-}
-
-/* HASH */
-async function hashPassword(p) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(p));
-  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
-}
-
-/* SIGN UP */
-async function signUp() {
-  let u = su_username.value.trim().toLowerCase();
-  const p = su_pass.value;
-  if (!u || !p) return alert("Fill everything");
-
-  const ref = db.ref("accounts/" + u);
-  if ((await ref.once("value")).exists()) return alert("Username taken");
-
-  await ref.set({ username: u, passwordHash: await hashPassword(p), banned: false, invisible: false });
-  currentUser = u;
-  startGame();
-}
-
-/* LOGIN */
-async function logIn() {
-  let u = li_username.value.trim().toLowerCase();
-  const p = li_pass.value;
-  if (!u || !p) return alert("Fill everything");
-
-  const accRef = db.ref("accounts/" + u);
-  const snap = await accRef.once("value");
-  if (!snap.exists()) return alert("User not found");
-
-  const acc = snap.val();
-
-  if (acc.banned) return alert("You are banned.");
-
-  if (await hashPassword(p) !== acc.passwordHash)
-    return alert("Wrong password");
-
-  currentUser = u;
-  startGame();
-}
-
-/* LOGOUT */
-function logout() {
-  if (currentUser) db.ref("players/" + currentUser).remove();
-  currentUser = null;
-  world.style.display = "none";
-  document.getElementById("title").style.display = "block";
-  showFrame("menu");
-}
-
-/* START GAME */
-async function startGame() {
-  document.getElementById("title").style.display = "none";
-  document.querySelectorAll(".frame").forEach(f => f.style.display = "none");
-
-  checkOrientation();
-
-  if (isTouchDevice()) {
-    leftJoystick.style.display = "block";
-    jumpBtn.style.display = "block";
-  }
-
-  const meRef = db.ref("players/" + currentUser);
-  meRef.set({ username: currentUser, x: 200, y: 400, vy: 0, onGround: true, invisible: false });
-  meRef.onDisconnect().remove();
-
-  // If this client gets kicked (player node removed), auto-logout
-  db.ref("players/" + currentUser).on("value", s => {
-    if (!s.exists() && currentUser) {
-      alert("You were kicked.");
-      logout();
+  // 👤 AUTH STATE
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById("dashboard").style.display = "block";
+    } else {
+      document.getElementById("dashboard").style.display = "none";
     }
   });
 
-  db.ref("players").on("value", s => {
-    const data = s.val() || {};
+  // 📊 ADD GRADE
+  window.addGrade = async function () {
+    const user = auth.currentUser;
+    if (!user) return;
 
-    for (let id in players)
-      if (!data[id]) { players[id].element.remove(); delete players[id]; }
+    const subject = document.getElementById("gradeSubject").value;
+    const value = document.getElementById("gradeValue").value;
 
-    for (let id in data) {
-      const p = data[id];
-      if (!players[id]) {
-        players[id] = {
-          x: p.x, y: p.y, vy: p.vy || 0, onGround: p.onGround ?? true,
-          username: p.username,
-          invisible: !!p.invisible,
-          element: createPlayer(p.username)
-        };
-      }
-      players[id].x = p.x;
-      players[id].y = p.y;
-      players[id].vy = p.vy || 0;
-      players[id].onGround = p.onGround ?? true;
-      players[id].invisible = !!p.invisible;
-    }
-  });
-
-  db.ref("chat").limitToLast(50).on("child_added", s => {
-    const m = s.val();
-    if (m.hidden && !isAdmin(currentUser)) return;
-    addChat(m.text);
-  });
-
-  gameLoop();
-}
-
-/* PLAYER ELEMENT */
-function createPlayer(name) {
-  const div = document.createElement("div");
-  div.className = "player";
-  const nameSpan = document.createElement("div");
-  nameSpan.className = "player-name";
-
-  const lower = (name || "").toLowerCase();
-  if (lower === "noob" || lower === "milk") {
-    nameSpan.style.color = "purple";
-  }
-
-  nameSpan.textContent = name;
-  div.appendChild(nameSpan);
-  worldInner.appendChild(div);
-  return div;
-}
-
-/* CHAT */
-function addChat(html) {
-  const d = document.createElement("div");
-  d.innerHTML = html;
-  chatMessages.appendChild(d);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-
-  chatInput.addEventListener("keydown", async e => {
-  if (e.key !== "Enter" || !currentUser) return;
-
-  const t = chatInput.value.trim();
-  if (!t) return;
-
-  // Admin command
-  if (t.startsWith("/")) {
-    if (isAdmin(currentUser)) {
-      handleAdminCommand(t);
-    }
-    chatInput.value = "";
-    return;
-  }
-
-  // Normal chat
-  const nameHtml = isAdmin(currentUser)
-    ? `<span style="color:purple;font-weight:bold;">${currentUser}</span>`
-    : `<b>${currentUser}</b>`;
-
-  db.ref("chat").push({ text: `${nameHtml}: ${t}` });
-  chatInput.value = "";
-});
-
-/* ADMIN COMMANDS */
-async function handleAdminCommand(cmd) {
-  const parts = cmd.trim().split(" ");
-  const c = parts[0].toLowerCase();
-
-  function hide(msg) {
-    db.ref("chat").push({ text: msg, hidden: true });
-  }
-
-  // /kick username  (instant)
-  if (c === "/kick" && parts[1]) {
-    const u = parts[1].toLowerCase();
-    db.ref("players/" + u).remove();
-    hide(`Kicked ${u}`);
-    return;
-  }
-
-  // /ban username
-  if (c === "/ban" && parts[1]) {
-    const u = parts[1].toLowerCase();
-    db.ref("bans/" + u).set(true);
-    db.ref("accounts/" + u).update({ banned: true });
-    db.ref("players/" + u).remove();
-    hide(`Banned ${u}`);
-    return;
-  }
-
-  // /unban username
-  if (c === "/unban" && parts[1]) {
-    const u = parts[1].toLowerCase();
-    db.ref("bans/" + u).remove();
-    db.ref("accounts/" + u).update({ banned: false });
-    hide(`Unbanned ${u}`);
-    return;
-  }
-
-  // /tp username  (instant to admin)
-  if (c === "/tp" && parts[1] && !parts[2]) {
-    const target = parts[1].toLowerCase();
-    const me = players[currentUser];
-    if (me) {
-      const pos = { x: me.x, y: me.y };
-      db.ref("players/" + target).update(pos);
-      if (players[target]) {
-        players[target].x = pos.x;
-        players[target].y = pos.y;
-      }
-      hide(`Teleported ${target} to you`);
-    }
-    return;
-  }
-
-  // /tp username1 username2
-  if (c === "/tp" && parts[1] && parts[2]) {
-    const u1 = parts[1].toLowerCase();
-    const u2 = parts[2].toLowerCase();
-    const p2 = players[u2];
-    if (p2) {
-      const pos = { x: p2.x, y: p2.y };
-      db.ref("players/" + u1).update(pos);
-      if (players[u1]) {
-        players[u1].x = pos.x;
-        players[u1].y = pos.y;
-      }
-      hide(`Teleported ${u1} to ${u2}`);
-    }
-    return;
-  }
-
-  // /setpos username x y
-  if (c === "/setpos" && parts.length === 4) {
-    const u = parts[1].toLowerCase();
-    const x = parseInt(parts[2]);
-    const y = parseInt(parts[3]);
-    db.ref("players/" + u).update({ x, y });
-    if (players[u]) {
-      players[u].x = x;
-      players[u].y = y;
-    }
-    hide(`Setpos ${u}`);
-    return;
-  }
-
-  // /clear
-  if (c === "/clear") {
-    db.ref("chat").remove();
-    hide("Chat cleared");
-    return;
-  }
-
-  // /announce message
-  if (c === "/announce" && parts.length > 1) {
-    const msg = parts.slice(1).join(" ");
-    db.ref("chat").push({
-      text: `<span style='color:yellow;font-weight:bold;'>ANNOUNCEMENT: ${msg}</span>`
-    });
-    return;
-  }
-
-  // /invisible username  (admin invis, no name/skin for non-admins)
-  if (c === "/invisible" && parts[1]) {
-    const u = parts[1].toLowerCase();
-    db.ref("accounts/" + u).update({ invisible: true });
-    db.ref("players/" + u).update({ invisible: true });
-    hide(`Made ${u} invisible`);
-    return;
-  }
-
-  // /uninvisible username
-  if (c === "/uninvisible" && parts[1]) {
-    const u = parts[1].toLowerCase();
-    db.ref("accounts/" + u).update({ invisible: false });
-    db.ref("players/" + u).update({ invisible: false });
-    hide(`Made ${u} visible`);
-    return;
-  }
-}
-
-  /* KEYBOARD */
-document.addEventListener("keydown", e => {
-  keys[e.key] = true;
-  if (e.key === " ") doJump();
-});
-document.addEventListener("keyup", e => keys[e.key] = false);
-
-/* JUMP */
-function doJump() {
-  const me = players[currentUser];
-  if (me && me.onGround) {
-    me.vy = -11;
-    me.onGround = false;
-  }
-}
-
-/* JOYSTICK */
-let joyActive = false, joyCenter = {x:0,y:0};
-
-leftJoystick.addEventListener("touchstart", e => {
-  joyActive = true;
-  const r = leftJoystick.getBoundingClientRect();
-  joyCenter = { x: r.left + r.width/2, y: r.top + r.height/2 };
-});
-
-leftJoystick.addEventListener("touchmove", e => {
-  if (!joyActive) return;
-  const t = e.touches[0];
-  const dx = t.clientX - joyCenter.x;
-  const max = 40;
-  const cdx = Math.max(-max, Math.min(max, dx));
-  leftJoystickInner.style.transform = `translate(${cdx}px,0)`;
-  joystickDir = cdx > 10 ? 1 : cdx < -10 ? -1 : 0;
-});
-
-leftJoystick.addEventListener("touchend", () => {
-  joyActive = false;
-  joystickDir = 0;
-  leftJoystickInner.style.transform = "translate(0,0)";
-});
-
-jumpBtn.addEventListener("touchstart", doJump);
-jumpBtn.addEventListener("click", doJump);
-
-/* GAME LOOP */
-function gameLoop() {
-  if (currentUser && players[currentUser]) {
-    const me = players[currentUser];
-
-    const left = keys["a"] || keys["ArrowLeft"] || joystickDir === -1;
-    const right = keys["d"] || keys["ArrowRight"] || joystickDir === 1;
-
-    if (left) me.x -= 3;
-    if (right) me.x += 3;
-
-    me.vy += 0.6;
-    me.y += me.vy;
-
-    if (me.y >= 400) { me.y = 400; me.vy = 0; me.onGround = true; }
-
-    me.x = Math.max(0, Math.min(WORLD_WIDTH - 30, me.x));
-    me.y = Math.max(0, Math.min(WORLD_HEIGHT - 40, me.y));
-
-    // sync to Firebase
-    db.ref("players/" + currentUser).update({
-      x: me.x, y: me.y, vy: me.vy, onGround: me.onGround, invisible: !!me.invisible
+    await addDoc(collection(db, "grades"), {
+      uid: user.uid,
+      subject,
+      value
     });
 
-    const camX = Math.min(Math.max(me.x - window.innerWidth/2, 0), WORLD_WIDTH - window.innerWidth);
-    const camY = Math.min(Math.max(me.y - window.innerHeight/2, 0), WORLD_HEIGHT - window.innerHeight);
+    loadGrades();
+  };
 
-    worldInner.style.left = -camX + "px";
-    worldInner.style.top = -camY + "px";
+  // 📥 LOAD GRADES
+  async function loadGrades() {
+    const user = auth.currentUser;
+    if (!user) return;
 
-    for (let id in players) {
-      const p = players[id];
+    const q = query(collection(db, "grades"), where("uid", "==", user.uid));
+    const snap = await getDocs(q);
 
-      // invisible logic: only admins see invisible players
-      if (p.invisible && !isAdmin(currentUser)) {
-        p.element.style.display = "none";
-        continue;
-      } else {
-        p.element.style.display = "block";
-      }
+    const gradesDiv = document.getElementById("grades");
+    gradesDiv.innerHTML = "";
 
-      p.element.style.left = p.x + "px";
-      p.element.style.top = p.y + "px";
-    }
+    snap.forEach(doc => {
+      const d = doc.data();
+      gradesDiv.innerHTML += `<p>${d.subject}: ${d.value}</p>`;
+    });
   }
 
-  requestAnimationFrame(gameLoop);
-}
 </script>
-
-</body>
-</html>
