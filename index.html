@@ -1,91 +1,196 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-  <meta charset="UTF-8">
-  <title>Prisijungimas / Registracija</title>
+<meta charset="UTF-8">
+<title>Auth App</title>
+
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  background: #f0f0f0;
+}
+
+.dark {
+  background: #121212;
+  color: white;
+}
+
+.container {
+  margin-top: 50px;
+}
+
+input {
+  padding: 10px;
+  margin: 5px;
+  width: 200px;
+}
+
+button {
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+}
+</style>
 </head>
+
 <body>
 
-<h2>Registracija</h2>
-<input type="text" id="username" placeholder="Username"><br>
-<input type="email" id="email" placeholder="Email"><br>
-<input type="password" id="password" placeholder="Password"><br>
-<button onclick="register()">Registruotis</button>
+<div id="auth" class="container">
+  <h2>Registracija</h2>
+  <input id="username" placeholder="Username"><br>
+  <input id="email" placeholder="Email"><br>
+  <input id="password" type="password" placeholder="Password"><br>
+  <button onclick="register()">Registruotis</button>
 
-<h2>Prisijungimas</h2>
-<input type="email" id="loginEmail" placeholder="Email"><br>
-<input type="password" id="loginPassword" placeholder="Password"><br>
-<button onclick="login()">Prisijungti</button>
+  <h2>Prisijungimas</h2>
+  <input id="loginEmail" placeholder="Email"><br>
+  <input id="loginPassword" type="password" placeholder="Password"><br>
+  <button onclick="login()">Prisijungti</button>
 
-<p id="message"></p>
+  <p id="msg"></p>
+</div>
+
+<div id="main" class="container" style="display:none;">
+  <h1>Main Page</h1>
+  <p>Email: <span id="userEmail"></span></p>
+  <p>Username: <span id="userName"></span></p>
+
+  <h3>Settings</h3>
+  <button onclick="toggleTheme()">Dark / Light</button>
+  <button onclick="logout()">Logout</button>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
-from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } 
-from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
 
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  getDoc 
+} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+// 🔥 TAVO CONFIG
 const firebaseConfig = {
-  apiKey: "TAVO_API_KEY",
-  authDomain: "TAVO_DOMAIN",
-  projectId: "TAVO_PROJECT_ID",
-  storageBucket: "TAVO_BUCKET",
-  messagingSenderId: "TAVO_ID",
-  appId: "TAVO_APP_ID"
+  apiKey: "AIzaSyCySjf5hLzR_23madNr6j8ItMFzJBndDBY",
+  authDomain: "clat-2b072.firebaseapp.com",
+  projectId: "clat-2b072",
+  storageBucket: "clat-2b072.firebasestorage.app",
+  messagingSenderId: "687262318153",
+  appId: "1:687262318153:web:9a3c9c8aebaa424fb70998",
+  measurementId: "G-65V5H3GJTY"
 };
 
+// INIT
 const app = initializeApp(firebaseConfig);
+getAnalytics(app);
+
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// REGISTRACIJA
-window.register = async function() {
-  const username = document.getElementById("username").value;
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+// REGISTER
+window.register = async () => {
+  const username = usernameInput.value;
+  const email = emailInput.value;
+  const password = passwordInput.value;
 
-  // tikrinam ar username uzimtas
-  const usernameRef = doc(db, "usernames", username);
-  const usernameSnap = await getDoc(usernameRef);
+  if (!username) {
+    msg.innerText = "Įvesk username";
+    return;
+  }
 
-  if (usernameSnap.exists()) {
-    document.getElementById("message").innerText = "Šis username jau užimtas!";
+  // tikrinam ar username užimtas
+  const ref = doc(db, "usernames", username);
+  const snap = await getDoc(ref);
+
+  if (snap.exists()) {
+    msg.innerText = "Username jau užimtas!";
     return;
   }
 
   try {
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    const user = await createUserWithEmailAndPassword(auth, email, password);
 
-    // issaugom username
-    await setDoc(doc(db, "users", userCred.user.uid), {
-      email: email,
-      username: username
+    await setDoc(doc(db, "users", user.user.uid), {
+      email,
+      username
     });
 
-    await setDoc(usernameRef, {
-      uid: userCred.user.uid
+    await setDoc(ref, {
+      uid: user.user.uid
     });
 
-    window.location.href = "main.html";
-
-  } catch (error) {
-    document.getElementById("message").innerText = error.message;
+  } catch (e) {
+    msg.innerText = e.message;
   }
-}
+};
 
 // LOGIN
-window.login = async function() {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-
+window.login = async () => {
   try {
-    await signInWithEmailAndPassword(auth, email, password);
-    window.location.href = "main.html";
-  } catch (error) {
-    document.getElementById("message").innerText = error.message;
+    await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
+  } catch (e) {
+    msg.innerText = e.message;
   }
+};
+
+// AUTH STATE
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    authDiv.style.display = "none";
+    mainDiv.style.display = "block";
+
+    const snap = await getDoc(doc(db, "users", user.uid));
+    const data = snap.data();
+
+    userEmail.innerText = data.email;
+    userName.innerText = data.username;
+
+  } else {
+    authDiv.style.display = "block";
+    mainDiv.style.display = "none";
+  }
+});
+
+// LOGOUT
+window.logout = () => signOut(auth);
+
+// THEME
+window.toggleTheme = () => {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+};
+
+// LOAD THEME
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
 }
+
+// DOM
+const usernameInput = document.getElementById("username");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+
+const msg = document.getElementById("msg");
+
+const authDiv = document.getElementById("auth");
+const mainDiv = document.getElementById("main");
+
+const userEmail = document.getElementById("userEmail");
+const userName = document.getElementById("userName");
+
 </script>
 
 </body>
