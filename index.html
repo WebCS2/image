@@ -1,97 +1,92 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <title>Prisijungimas / Registracija</title>
+</head>
+<body>
+
+<h2>Registracija</h2>
+<input type="text" id="username" placeholder="Username"><br>
+<input type="email" id="email" placeholder="Email"><br>
+<input type="password" id="password" placeholder="Password"><br>
+<button onclick="register()">Registruotis</button>
+
+<h2>Prisijungimas</h2>
+<input type="email" id="loginEmail" placeholder="Email"><br>
+<input type="password" id="loginPassword" placeholder="Password"><br>
+<button onclick="login()">Prisijungti</button>
+
+<p id="message"></p>
+
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } 
+from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    query,
-    where,
-    getDocs
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "TAVO_API_KEY",
+  authDomain: "TAVO_DOMAIN",
+  projectId: "TAVO_PROJECT_ID",
+  storageBucket: "TAVO_BUCKET",
+  messagingSenderId: "TAVO_ID",
+  appId: "TAVO_APP_ID"
+};
 
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyCySjf5hLzR_23madNr6j8ItMFzJBndDBY",
-    authDomain: "clat-2b072.firebaseapp.com",
-    projectId: "clat-2b072",
-    storageBucket: "clat-2b072.firebasestorage.app",
-    messagingSenderId: "687262318153",
-    appId: "1:687262318153:web:9a3c9c8aebaa424fb70998"
-  };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  // Init Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+// REGISTRACIJA
+window.register = async function() {
+  const username = document.getElementById("username").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-  // 🔐 REGISTER
-  window.register = async function () {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    await createUserWithEmailAndPassword(auth, email, password);
-  };
+  // tikrinam ar username uzimtas
+  const usernameRef = doc(db, "usernames", username);
+  const usernameSnap = await getDoc(usernameRef);
 
-  // 🔑 LOGIN
-  window.login = async function () {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    await signInWithEmailAndPassword(auth, email, password);
-  };
-
-  // 🚪 LOGOUT
-  window.logout = async function () {
-    await signOut(auth);
-  };
-
-  // 👤 AUTH STATE
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      document.getElementById("dashboard").style.display = "block";
-    } else {
-      document.getElementById("dashboard").style.display = "none";
-    }
-  });
-
-  // 📊 ADD GRADE
-  window.addGrade = async function () {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const subject = document.getElementById("gradeSubject").value;
-    const value = document.getElementById("gradeValue").value;
-
-    await addDoc(collection(db, "grades"), {
-      uid: user.uid,
-      subject,
-      value
-    });
-
-    loadGrades();
-  };
-
-  // 📥 LOAD GRADES
-  async function loadGrades() {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const q = query(collection(db, "grades"), where("uid", "==", user.uid));
-    const snap = await getDocs(q);
-
-    const gradesDiv = document.getElementById("grades");
-    gradesDiv.innerHTML = "";
-
-    snap.forEach(doc => {
-      const d = doc.data();
-      gradesDiv.innerHTML += `<p>${d.subject}: ${d.value}</p>`;
-    });
+  if (usernameSnap.exists()) {
+    document.getElementById("message").innerText = "Šis username jau užimtas!";
+    return;
   }
 
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
+    // issaugom username
+    await setDoc(doc(db, "users", userCred.user.uid), {
+      email: email,
+      username: username
+    });
+
+    await setDoc(usernameRef, {
+      uid: userCred.user.uid
+    });
+
+    window.location.href = "main.html";
+
+  } catch (error) {
+    document.getElementById("message").innerText = error.message;
+  }
+}
+
+// LOGIN
+window.login = async function() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = "main.html";
+  } catch (error) {
+    document.getElementById("message").innerText = error.message;
+  }
+}
 </script>
+
+</body>
+</html>
